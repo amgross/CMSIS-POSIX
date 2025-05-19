@@ -34,7 +34,48 @@ Contributions via Issues or Pull Requests are very welcome—please follow the e
 
 ## 🛠️ Installation & Build
 
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/<your‑org>/CMSIS-POSIX.git
-   cd CMSIS-POSIX
+Add to your compilation the sources from src folder and the headers from the inc folder
+
+---
+
+## ✅ Running Built‑In Tests
+
+A small test suite is provided under `tests/config1/`. To run:
+
+cd tests/config1
+make run
+
+---
+
+## 🚀 Roadmap
+
+* [ ] Complete CMSIS‑RTOS2 thread API
+* [ ] Implement all synchronization primitives (semaphores, event flags, etc.)
+* [ ] Add more platform support (macOS, other Linux distros)
+* [ ] Improve test coverage
+
+> This is a community-driven effort—if you need a specific feature, please open an Issue or submit a PR!
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/foo`)
+3. Commit your changes (`git commit -am 'Add foo'`)
+4. Push to the branch (`git push origin feature/foo`)
+5. Open a Pull Request
+
+Please try to match the existing formatting and naming conventions.
+
+---
+
+## ⭐️ Show Your Support
+
+If you find CMSIS‑POSIX useful, please give this repo a ★ on GitHub — it helps me know you’re interested and motivates further development!
+
+---
+
+## 📜 License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
