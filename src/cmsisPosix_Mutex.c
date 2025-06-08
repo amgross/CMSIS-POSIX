@@ -6,9 +6,7 @@
 #include <string.h>
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
-
-// Forward declarations
-void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts);
+#include "cmsisPosix_Common.h"
 
 // TODO add comment why we prefer not to use cb mem (So we alwais need to free and not depends on what we got)
 
