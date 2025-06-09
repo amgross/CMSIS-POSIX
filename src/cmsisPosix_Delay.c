@@ -5,9 +5,7 @@
 #include <time.h>
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
-
-// Forward declarations
-void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts);
+#include "cmsisPosix_Common.h"
 
 osStatus_t osDelay(uint32_t ticks)
 {
