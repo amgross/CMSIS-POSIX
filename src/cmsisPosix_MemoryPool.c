@@ -3,16 +3,15 @@
 #include <pthread.h>
 #include <errno.h>
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
+#include "cmsisPosix_Common.h"
 
-// Forward declarations
-void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts);
-
-// Structure to hold POSIX memory pool and CMSIS attributes
+// Structure to hold memory pool and CMSIS attributes
 typedef struct
 {
     const char *name;           // Name of memory pool
@@ -22,7 +21,7 @@ typedef struct
     uint8_t *arena;             // Pre-allocated arena for memory blocks
     sem_t sem;                  // Semaphore to keep track of block usage
     pthread_mutex_t mutex;      // Mutex for used_flags
-    uint8_t *used_flags;        // Array of status flags (none-zero if block is used)
+    bool *used_flags;           // Array of status flags (true if block is used)
 } cp_memPoolData_t;
 
 osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, const osMemoryPoolAttr_t *attr)
@@ -55,7 +54,7 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
     mem_pool->block_count = block_count;
     mem_pool->block_size = block_size;
     mem_pool->padded_block_size = padded_block_size;
-    mem_pool->used_flags = calloc(block_count, sizeof(uint8_t));
+    mem_pool->used_flags = calloc(block_count, sizeof(bool));
 
     // Instead of using cb_mem, an arena of padded blocks is allocated to ensure memory alignment for each block
     mem_pool->arena = malloc(block_count * padded_block_size);
@@ -113,7 +112,7 @@ void *osMemoryPoolAlloc(osMemoryPoolId_t mp_id, uint32_t timeout)
     for (uint32_t idx = 0;  idx < mem_pool->block_count;  idx++) {
         if (!mem_pool->used_flags[idx]) {
             // Mark block as used
-            mem_pool->used_flags[idx] = 1;
+            mem_pool->used_flags[idx] = true;
             block = mem_pool->arena + (idx * mem_pool->padded_block_size);
             break;
         }
@@ -139,7 +138,7 @@ osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
         {
             // Mark block as unused
             if (mem_pool->used_flags[idx]) {
-                mem_pool->used_flags[idx] = 0;
+                mem_pool->used_flags[idx] = false;
                 status = osOK;
                 break;
             }
@@ -185,7 +184,11 @@ uint32_t osMemoryPoolGetCount(osMemoryPoolId_t mp_id)
         return 0;
     }
 
-    return mem_pool->block_count - osMemoryPoolGetSpace(mp_id);
+    int space = 0;
+    if ((sem_getvalue(&mem_pool->sem, &space) != 0) || (space < 0)) {
+        return 0;
+    }
+    return mem_pool->block_count - space;
 }
 
 uint32_t osMemoryPoolGetSpace(osMemoryPoolId_t mp_id)

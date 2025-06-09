@@ -17,24 +17,25 @@ void test_start(void) {
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
   myMemoryPool = osMemoryPoolNew(2, 128, NULL);   // Create memory pool with default attributes
-  CP_ASSERT_TRUE(osMemoryPoolGetCapacity(myMemoryPool) == 2);
-  CP_ASSERT_TRUE(osMemoryPoolGetBlockSize(myMemoryPool) == 128);
-  CP_ASSERT_TRUE(osMemoryPoolGetCount(myMemoryPool) == 0);
-  CP_ASSERT_TRUE(osMemoryPoolGetSpace(myMemoryPool) == 2);
+  CP_ASSERT_NE(myMemoryPool, NULL);
+  CP_ASSERT_EQ(osMemoryPoolGetCapacity(myMemoryPool), 2);
+  CP_ASSERT_EQ(osMemoryPoolGetBlockSize(myMemoryPool), 128);
+  CP_ASSERT_EQ(osMemoryPoolGetCount(myMemoryPool), 0);
+  CP_ASSERT_EQ(osMemoryPoolGetSpace(myMemoryPool), 2);
 
   // Check data validation
-  CP_ASSERT_TRUE(osMemoryPoolNew(0, 128, NULL) == NULL);
-  CP_ASSERT_TRUE(osMemoryPoolNew(2, 0, NULL) == NULL);
-  CP_ASSERT_TRUE(osMemoryPoolAlloc(NULL, 0) == NULL);
-  CP_ASSERT_TRUE(osMemoryPoolAlloc(NULL, 1) == NULL);
-  CP_ASSERT_TRUE(osMemoryPoolAlloc(NULL, osWaitForever) == NULL);
-  CP_ASSERT_TRUE(osMemoryPoolFree(NULL, NULL) == osErrorParameter);
-  CP_ASSERT_TRUE(osMemoryPoolFree(myMemoryPool, NULL) == osErrorParameter);
-  CP_ASSERT_TRUE(osMemoryPoolGetCapacity(NULL) == 0);
-  CP_ASSERT_TRUE(osMemoryPoolGetBlockSize(NULL) == 0);
-  CP_ASSERT_TRUE(osMemoryPoolGetCount(NULL) == 0);
-  CP_ASSERT_TRUE(osMemoryPoolGetSpace(NULL) == 0);
-  CP_ASSERT_TRUE(osMemoryPoolDelete(NULL) == osErrorParameter);
+  CP_ASSERT_EQ(osMemoryPoolNew(0, 128, NULL), NULL);
+  CP_ASSERT_EQ(osMemoryPoolNew(2, 0, NULL), NULL);
+  CP_ASSERT_EQ(osMemoryPoolAlloc(NULL, 0), NULL);
+  CP_ASSERT_EQ(osMemoryPoolAlloc(NULL, 1), NULL);
+  CP_ASSERT_EQ(osMemoryPoolAlloc(NULL, osWaitForever), NULL);
+  CP_ASSERT_EQ(osMemoryPoolFree(NULL, NULL), osErrorParameter);
+  CP_ASSERT_EQ(osMemoryPoolFree(myMemoryPool, NULL), osErrorParameter);
+  CP_ASSERT_EQ(osMemoryPoolGetCapacity(NULL), 0);
+  CP_ASSERT_EQ(osMemoryPoolGetBlockSize(NULL), 0);
+  CP_ASSERT_EQ(osMemoryPoolGetCount(NULL), 0);
+  CP_ASSERT_EQ(osMemoryPoolGetSpace(NULL), 0);
+  CP_ASSERT_EQ(osMemoryPoolDelete(NULL), osErrorParameter);
 
   osThreadNew(Thread1, NULL, NULL);     // Create Thread1
   osThreadNew(Thread2, NULL, NULL);     // Create Thread2
@@ -42,7 +43,7 @@ void test_start(void) {
   // Wait for the threads to terminate
   while (thread1 || thread2) {}
 
-  osMemoryPoolDelete(myMemoryPool);
+  CP_ASSERT_EQ(osMemoryPoolDelete(myMemoryPool), osOK);
 }
 
 void Thread1(void *argument) {
