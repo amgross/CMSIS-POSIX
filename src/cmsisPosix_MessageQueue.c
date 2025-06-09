@@ -9,9 +9,7 @@
 #include <string.h>
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
-
-// Forward declarations
-void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts);
+#include "cmsisPosix_Common.h"
 
 // Structure to hold POSIX message queue and CMSIS attributes
 typedef struct
@@ -20,8 +18,8 @@ typedef struct
     uint32_t msg_count;         // Maximum number of messages in queue
     uint32_t msg_size;          // Size of each message
     uint32_t padded_msg_size;   // Padded size of each message
-    sem_t sem;                  // Semaphore to keep track of buffer usage
-    pthread_cond_t cond;        // Condition variable for arrival of new message
+    sem_t avail;                // Number of message slots available
+    sem_t used;                 // Number of message slots used
     pthread_mutex_t mutex;      // Mutex for buffer, priorities, head and tail
     uint8_t *buffer;            // Pre-allocated circular buffer for messages
     uint8_t *priorities;        // Array of message priorities
@@ -56,20 +54,20 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
         return NULL;
     }
 
-    if (sem_init(&queue->sem, 0, msg_count) != 0) {
+    if (sem_init(&queue->avail, 0, msg_count) != 0) {
         free(queue);
         return NULL;
     }
 
-    if (pthread_cond_init(&queue->cond, NULL) != 0) {
-        sem_destroy(&queue->sem);
+    if (sem_init(&queue->used, 0, 0) != 0) {
+        sem_destroy(&queue->avail);
         free(queue);
         return NULL;
     }
 
     if (pthread_mutex_init(&queue->mutex, NULL) != 0) {
-        sem_destroy(&queue->sem);
-        pthread_cond_destroy(&queue->cond);
+        sem_destroy(&queue->avail);
+        sem_destroy(&queue->used);
         free(queue);
         return NULL;
     }
@@ -112,20 +110,20 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
         return osErrorParameter;
     }
 
-    // Lock the semaphore
+    // Try to reduce the number of available slots
     int posix_ret;
     if (timeout == 0) {
-        // Try to lock without waiting
-        posix_ret = sem_trywait(&queue->sem);
+        // Do not wait
+        posix_ret = sem_trywait(&queue->avail);
     } else if (timeout == osWaitForever) {
         // Block indefinitely
-        posix_ret = sem_wait(&queue->sem);
+        posix_ret = sem_wait(&queue->avail);
     } else {
         struct timespec ts;
         cp_timeoutToTimespec(timeout, &ts);
 
         // Wait for the required duration
-        posix_ret = sem_timedwait(&queue->sem, &ts);
+        posix_ret = sem_timedwait(&queue->avail, &ts);
     }
 
     if (posix_ret != 0) {
@@ -159,10 +157,10 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
     memcpy(queue->buffer + (ins * queue->padded_msg_size), msg_ptr, queue->msg_size);
     queue->priorities[ins] = msg_prio;
     queue->tail = next_idx(queue->tail, queue->msg_count);
-
-    // Signal that a new message is available
-    pthread_cond_signal(&queue->cond);
     pthread_mutex_unlock(&queue->mutex);
+
+    // Increase the number used slots
+    sem_post(&queue->used);
     return osOK;
 }
 
@@ -174,44 +172,42 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
         return osErrorParameter;
     }
 
-    // Setup absolute time for timeout
-    struct timespec ts;
-    cp_timeoutToTimespec(timeout, &ts);
+    // Try to reduce the number of used slots
+    int posix_ret;
+    if (timeout == 0) {
+        // Do not wait
+        posix_ret = sem_trywait(&queue->used);
+    } else if (timeout == osWaitForever) {
+        // Block indefinitely
+        posix_ret = sem_wait(&queue->used);
+    } else {
+        struct timespec ts;
+        cp_timeoutToTimespec(timeout, &ts);
 
-    osStatus_t status = osError;
-    pthread_mutex_lock(&queue->mutex);
-    while (1) {
-        if (osMessageQueueGetCount(mq_id) > 0) {
-            // Message available, copy from head of circular buffer
-            memcpy(msg_ptr, queue->buffer + (queue->head * queue->padded_msg_size), queue->msg_size);
-            if (msg_prio) {
-                *msg_prio = queue->priorities[queue->head];
-            }
+        // Wait for the required duration
+        posix_ret = sem_timedwait(&queue->used, &ts);
+    }
 
-            // Advance head
-            queue->head = next_idx(queue->head, queue->msg_count);
-
-            // Unlock semaphore and report success
-            sem_post(&queue->sem);
-            status = osOK;
-            break;
-        } else if (timeout == 0) {
-            // Zero timeout, abort now
-            status = osErrorResource;
-            break;
-        } else if (timeout == osWaitForever) {
-            // Block indefinitely
-            pthread_cond_wait(&queue->cond, &queue->mutex);
+    if (posix_ret != 0) {
+        if (errno == ETIMEDOUT) {
+            return osErrorTimeout;
         } else {
-            // Wait until absolute timeout
-            if (pthread_cond_timedwait(&queue->cond, &queue->mutex, &ts) == ETIMEDOUT) {
-                status = osErrorTimeout;
-                break;
-            }
+            return osErrorResource;
         }
     }
+
+    // Message available, copy from head of circular buffer and advance head
+    pthread_mutex_lock(&queue->mutex);
+        memcpy(msg_ptr, queue->buffer + (queue->head * queue->padded_msg_size), queue->msg_size);
+    if (msg_prio) {
+        *msg_prio = queue->priorities[queue->head];
+    }
+    queue->head = next_idx(queue->head, queue->msg_count);
     pthread_mutex_unlock(&queue->mutex);
-    return status;
+
+    // Increase the number available slots
+    sem_post(&queue->avail);
+    return osOK;
 }
 
 uint32_t osMessageQueueGetCapacity(osMessageQueueId_t mq_id)
@@ -244,7 +240,11 @@ uint32_t osMessageQueueGetCount(osMessageQueueId_t mq_id)
         return 0;
     }
 
-    return queue->msg_count - osMessageQueueGetSpace(mq_id);
+    int count = 0;
+    if ((sem_getvalue(&queue->used, &count) != 0) || (count < 0)) {
+        count = 0;
+    }
+    return count;
 }
 
 uint32_t osMessageQueueGetSpace(osMessageQueueId_t mq_id)
@@ -256,7 +256,7 @@ uint32_t osMessageQueueGetSpace(osMessageQueueId_t mq_id)
     }
 
     int space = 0;
-    if ((sem_getvalue(&queue->sem, &space) != 0) || (space < 0)) {
+    if ((sem_getvalue(&queue->avail, &space) != 0) || (space < 0)) {
         space = 0;
     }
     return space;
@@ -270,8 +270,8 @@ osStatus_t osMessageQueueDelete(osMessageQueueId_t mq_id)
         return osErrorParameter;
     }
 
-    sem_destroy(&queue->sem);
-    pthread_cond_destroy(&queue->cond);
+    sem_destroy(&queue->avail);
+    sem_destroy(&queue->used);
     pthread_mutex_destroy(&queue->mutex);
     free(queue->buffer);
     free(queue->priorities);
