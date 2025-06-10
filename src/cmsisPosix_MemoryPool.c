@@ -26,7 +26,8 @@ typedef struct
 
 osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, const osMemoryPoolAttr_t *attr)
 {
-    if ((block_count == 0) || (block_size == 0)) {
+    if ((block_count == 0) || (block_size == 0))
+    {
         return NULL;
     }
 
@@ -35,16 +36,19 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
     uint32_t padded_block_size = align_size * ((block_size + align_size - 1) / align_size);
 
     cmsisPosix_memoryPoolHandler_t *mem_pool = malloc(sizeof(cmsisPosix_memoryPoolHandler_t));
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return NULL;
     }
 
-    if (sem_init(&mem_pool->sem, 0, block_count) != 0) {
+    if (sem_init(&mem_pool->sem, 0, block_count) != 0)
+    {
         free(mem_pool);
         return NULL;
     }
 
-    if (pthread_mutex_init(&mem_pool->mutex, NULL) != 0) {
+    if (pthread_mutex_init(&mem_pool->mutex, NULL) != 0)
+    {
         sem_destroy(&mem_pool->sem);
         free(mem_pool);
         return NULL;
@@ -59,7 +63,8 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
     // Instead of using cb_mem, an arena of padded blocks is allocated to ensure memory alignment for each block
     mem_pool->arena = malloc(block_count * padded_block_size);
 
-    if ((mem_pool->arena == NULL) || (mem_pool->used_flags == NULL)) {
+    if ((mem_pool->arena == NULL) || (mem_pool->used_flags == NULL))
+    {
         osMemoryPoolDelete(mem_pool);
         return NULL;
     }
@@ -71,7 +76,8 @@ const char *osMemoryPoolGetName (osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         NULL;
     }
 
@@ -82,19 +88,23 @@ void *osMemoryPoolAlloc(osMemoryPoolId_t mp_id, uint32_t timeout)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return NULL;
     }
 
     // Lock the semaphore
     int posix_ret;
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         // Try to lock without waiting
         posix_ret = sem_trywait(&mem_pool->sem);
-    } else if (timeout == osWaitForever) {
+    } else if (timeout == osWaitForever)
+    {
         // Block indefinitely
         posix_ret = sem_wait(&mem_pool->sem);
-    } else {
+    } else
+    {
         struct timespec ts;
         cp_timeoutToTimespec(timeout, &ts);
 
@@ -102,15 +112,18 @@ void *osMemoryPoolAlloc(osMemoryPoolId_t mp_id, uint32_t timeout)
         posix_ret = sem_timedwait(&mem_pool->sem, &ts);
     }
 
-    if (posix_ret != 0) {
+    if (posix_ret != 0)
+    {
         return NULL;
     }
 
     // Return first unused block
     void *block = NULL;
     pthread_mutex_lock(&mem_pool->mutex);
-    for (uint32_t idx = 0;  idx < mem_pool->block_count;  idx++) {
-        if (!mem_pool->used_flags[idx]) {
+    for (uint32_t idx = 0;  idx < mem_pool->block_count;  idx++)
+    {
+        if (!mem_pool->used_flags[idx])
+        {
             // Mark block as used
             mem_pool->used_flags[idx] = true;
             block = mem_pool->arena + (idx * mem_pool->padded_block_size);
@@ -125,7 +138,8 @@ osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return osErrorParameter;
     }
 
@@ -133,11 +147,13 @@ osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
 
     // Look for matching memory pointer
     pthread_mutex_lock(&mem_pool->mutex);
-    for (uint32_t idx = 0;  idx < mem_pool->block_count;  idx++) {
+    for (uint32_t idx = 0;  idx < mem_pool->block_count;  idx++)
+    {
         if (block == (mem_pool->arena + (idx * mem_pool->padded_block_size)))
         {
             // Mark block as unused
-            if (mem_pool->used_flags[idx]) {
+            if (mem_pool->used_flags[idx])
+            {
                 mem_pool->used_flags[idx] = false;
                 status = osOK;
                 break;
@@ -147,7 +163,8 @@ osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
     pthread_mutex_unlock(&mem_pool->mutex);
 
     // Unlock the semaphore if the block was freed
-    if (status == osOK) {
+    if (status == osOK)
+    {
         sem_post(&mem_pool->sem);
     }
 
@@ -158,7 +175,8 @@ uint32_t osMemoryPoolGetCapacity(osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return 0;
     }
 
@@ -169,7 +187,8 @@ uint32_t osMemoryPoolGetBlockSize(osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return 0;
     }
 
@@ -180,12 +199,14 @@ uint32_t osMemoryPoolGetCount(osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return 0;
     }
 
     int space = 0;
-    if ((sem_getvalue(&mem_pool->sem, &space) != 0) || (space < 0)) {
+    if ((sem_getvalue(&mem_pool->sem, &space) != 0) || (space < 0))
+    {
         return 0;
     }
     return mem_pool->block_count - space;
@@ -195,12 +216,14 @@ uint32_t osMemoryPoolGetSpace(osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return 0;
     }
 
     int space = 0;
-    if ((sem_getvalue(&mem_pool->sem, &space) != 0) || (space < 0)) {
+    if ((sem_getvalue(&mem_pool->sem, &space) != 0) || (space < 0))
+    {
         space = 0;
     }
     return space;
@@ -210,7 +233,8 @@ osStatus_t osMemoryPoolDelete(osMemoryPoolId_t mp_id)
 {
     cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
-    if (mem_pool == NULL) {
+    if (mem_pool == NULL)
+    {
         return osErrorParameter;
     }
 

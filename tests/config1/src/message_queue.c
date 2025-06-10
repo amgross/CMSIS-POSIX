@@ -141,7 +141,8 @@ void Thread_manager(void *argument)
   while (thread3 || thread4) {}
   CP_ASSERT_EQ(osMessageQueueGetCount(myMessageQueue), 100);
   uint8_t last_priority = 255;
-  for (int n = 0;  n < 100;  n++) {
+  for (int n = 0;  n < 100;  n++)
+  {
     CP_ASSERT_EQ(osMessageQueueGet(myMessageQueue, &msg, &prio, osWaitForever), osOK);
     CP_ASSERT_TRUE(prio <= last_priority);
     last_priority = prio;

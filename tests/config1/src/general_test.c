@@ -26,8 +26,10 @@ void test_start(void)
 void Thread1(void *argument)
 {
   (void)argument;
-  for (int i = 0; i < 5; ++i) {
-    if (osMutexAcquire(myMutex, osWaitForever) == osOK) {
+  for (int i = 0; i < 5; ++i)
+  {
+    if (osMutexAcquire(myMutex, osWaitForever) == osOK)
+    {
       TEST_LOG_INFO("[Thread1] Acquired mutex\n");
       TEST_LOG_INFO("[Thread1] Doing work\n");
       TEST_LOG_INFO("[Thread1] Releasing mutex\n");
@@ -37,10 +39,13 @@ void Thread1(void *argument)
   TEST_LOG_INFO("[Thread1] Done\n");
 }
 
-void Thread2(void *argument) {
+void Thread2(void *argument)
+{
   (void)argument;
-  for (int i = 0; i < 5; ++i) {
-    if (osMutexAcquire(myMutex, osWaitForever) == osOK) {
+  for (int i = 0; i < 5; ++i)
+  {
+    if (osMutexAcquire(myMutex, osWaitForever) == osOK)
+    {
       TEST_LOG_INFO("[Thread2] Acquired mutex\n");
       TEST_LOG_INFO("[Thread2] Doing work\n");
       TEST_LOG_INFO("[Thread2] Releasing mutex\n");

@@ -18,7 +18,8 @@ void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts)
     ts->tv_nsec += total_nanos % 1000000000L;
 
     // Normalize nsec if it overflows
-    if (ts->tv_nsec >= 1000000000L) {
+    if (ts->tv_nsec >= 1000000000L)
+    {
         ts->tv_sec += ts->tv_nsec / 1000000000L;
         ts->tv_nsec %= 1000000000L;
     }

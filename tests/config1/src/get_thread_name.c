@@ -10,7 +10,8 @@ void Thread1(void *argument);
 
 #define THREAD_NAME "thread name"
 
-void test_start(void) {
+void test_start(void)
+{
   osThreadAttr_t attr = (osThreadAttr_t){0};
 
   osKernelInitialize();                 // Initialize CMSIS-RTOS
@@ -28,7 +29,8 @@ void test_start(void) {
   CP_UASSERT_NREACHABLE();
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void) argument;
   return;
 }

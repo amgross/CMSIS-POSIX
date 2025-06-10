@@ -13,11 +13,14 @@ osStatus_t osDelay(uint32_t ticks)
     cp_timeoutToTimespec(ticks, &ts);
 
     // Sleep until it is time
-    while (1) {
+    while (1)
+    {
         int posix_ret =  clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL);
-        if (posix_ret == 0) {
+        if (posix_ret == 0)
+        {
             return osOK;
-        } else if (posix_ret != EINTR) {
+        } else if (posix_ret != EINTR)
+        {
             return osError;
         }
     }

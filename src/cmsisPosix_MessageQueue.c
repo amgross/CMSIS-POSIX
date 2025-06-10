@@ -41,7 +41,8 @@ static uint32_t prev_idx(uint32_t idx, uint32_t capacity)
 
 osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, const osMessageQueueAttr_t *attr)
 {
-    if ((msg_count == 0) || (msg_size == 0)) {
+    if ((msg_count == 0) || (msg_size == 0))
+    {
         return NULL;
     }
 
@@ -50,22 +51,26 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
     uint32_t padded_msg_size = align_size * ((msg_size + align_size - 1) / align_size);
 
     cmsisPosix_messageQueueHandler_t *queue = malloc(sizeof(cmsisPosix_messageQueueHandler_t));
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return NULL;
     }
 
-    if (sem_init(&queue->avail, 0, msg_count) != 0) {
+    if (sem_init(&queue->avail, 0, msg_count) != 0)
+    {
         free(queue);
         return NULL;
     }
 
-    if (sem_init(&queue->used, 0, 0) != 0) {
+    if (sem_init(&queue->used, 0, 0) != 0)
+    {
         sem_destroy(&queue->avail);
         free(queue);
         return NULL;
     }
 
-    if (pthread_mutex_init(&queue->mutex, NULL) != 0) {
+    if (pthread_mutex_init(&queue->mutex, NULL) != 0)
+    {
         sem_destroy(&queue->avail);
         sem_destroy(&queue->used);
         free(queue);
@@ -83,7 +88,8 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
     // Instead of using cb_mem, a buffer of padded messages is allocated to ensure memory alignment for each message
     queue->buffer = malloc(msg_count * padded_msg_size);
 
-    if ((queue->buffer == NULL) || (queue->priorities == NULL)) {
+    if ((queue->buffer == NULL) || (queue->priorities == NULL))
+    {
         osMessageQueueDelete(queue);
         return NULL;
     }
@@ -95,7 +101,8 @@ const char *osMessageQueueGetName (osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         NULL;
     }
 
@@ -106,16 +113,19 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if ((queue == NULL) || (msg_ptr == NULL)) {
+    if ((queue == NULL) || (msg_ptr == NULL))
+    {
         return osErrorParameter;
     }
 
     // Try to reduce the number of available slots
     int posix_ret;
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         // Do not wait
         posix_ret = sem_trywait(&queue->avail);
-    } else if (timeout == osWaitForever) {
+    } else if (timeout == osWaitForever)
+    {
         // Block indefinitely
         posix_ret = sem_wait(&queue->avail);
     } else {
@@ -126,8 +136,10 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
         posix_ret = sem_timedwait(&queue->avail, &ts);
     }
 
-    if (posix_ret != 0) {
-        if (errno == ETIMEDOUT) {
+    if (posix_ret != 0)
+    {
+        if (errno == ETIMEDOUT)
+        {
             return osErrorTimeout;
         } else {
             return osErrorResource;
@@ -137,9 +149,11 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
     // Find message insertion position starting from tail of queue
     pthread_mutex_lock(&queue->mutex);
     uint32_t ins = queue->tail;
-    while (ins != queue->head) {
+    while (ins != queue->head)
+    {
         uint32_t prev = prev_idx(ins, queue->msg_count);
-        if (msg_prio <= queue->priorities[prev]) {
+        if (msg_prio <= queue->priorities[prev])
+        {
             // Previous message in queue has higher or same priority.  Insert message here
             break;
         } else {
@@ -168,16 +182,19 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if ((queue == NULL) || (msg_ptr == NULL)) {
+    if ((queue == NULL) || (msg_ptr == NULL))
+    {
         return osErrorParameter;
     }
 
     // Try to reduce the number of used slots
     int posix_ret;
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         // Do not wait
         posix_ret = sem_trywait(&queue->used);
-    } else if (timeout == osWaitForever) {
+    } else if (timeout == osWaitForever)
+    {
         // Block indefinitely
         posix_ret = sem_wait(&queue->used);
     } else {
@@ -188,8 +205,10 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
         posix_ret = sem_timedwait(&queue->used, &ts);
     }
 
-    if (posix_ret != 0) {
-        if (errno == ETIMEDOUT) {
+    if (posix_ret != 0)
+    {
+        if (errno == ETIMEDOUT)
+        {
             return osErrorTimeout;
         } else {
             return osErrorResource;
@@ -199,7 +218,8 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
     // Message available, copy from head of circular buffer and advance head
     pthread_mutex_lock(&queue->mutex);
     memcpy(msg_ptr, queue->buffer + (queue->head * queue->padded_msg_size), queue->msg_size);
-    if (msg_prio) {
+    if (msg_prio)
+    {
         *msg_prio = queue->priorities[queue->head];
     }
     queue->head = next_idx(queue->head, queue->msg_count);
@@ -214,7 +234,8 @@ uint32_t osMessageQueueGetCapacity(osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return 0;
     }
 
@@ -225,7 +246,8 @@ uint32_t osMessageQueueGetMsgSize(osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return 0;
     }
 
@@ -236,12 +258,14 @@ uint32_t osMessageQueueGetCount(osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return 0;
     }
 
     int count = 0;
-    if ((sem_getvalue(&queue->used, &count) != 0) || (count < 0)) {
+    if ((sem_getvalue(&queue->used, &count) != 0) || (count < 0))
+    {
         count = 0;
     }
     return count;
@@ -251,12 +275,14 @@ uint32_t osMessageQueueGetSpace(osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return 0;
     }
 
     int space = 0;
-    if ((sem_getvalue(&queue->avail, &space) != 0) || (space < 0)) {
+    if ((sem_getvalue(&queue->avail, &space) != 0) || (space < 0))
+    {
         space = 0;
     }
     return space;
@@ -266,7 +292,8 @@ osStatus_t osMessageQueueDelete(osMessageQueueId_t mq_id)
 {
     cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
-    if (queue == NULL) {
+    if (queue == NULL)
+    {
         return osErrorParameter;
     }
 

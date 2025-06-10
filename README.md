@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-A partial implementation of the CMSIS‑RTOS2 API on a POSIX platform for testing and mocking embedded code.
+An implementation of the CMSIS‑RTOS2 API on a POSIX platform for testing and mocking embedded code.
 
 ---
 
@@ -14,10 +14,13 @@ CMSIS‑POSIX allows you to build and test CMSIS‑RTOS2‑based applications on
 - **Mocking** RTOS behavior during development  
 - Rapid iteration before deploying to real hardware
 
-> **Status:** Partial implementation  
-> - Thread creation, deletion, management  
-> - Mutex create/lock/unlock  
-> - (Other RTOS2 API calls are not yet implemented)
+> **Status:** Partial implementation
+> For full function implementation list please refer to implemented.txt
+> - Thread basics
+> - Mutex
+> - Semaphore
+> - memory pool
+> - Message queues
 
 Contributions via Issues or Pull Requests are very welcome—please follow the existing coding style (no strict format rules, just be consistent).
 

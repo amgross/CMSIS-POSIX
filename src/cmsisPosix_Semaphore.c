@@ -20,21 +20,25 @@ typedef struct
 
 osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const osSemaphoreAttr_t *attr)
 {
-    if ((max_count == 0) || (max_count < initial_count)) {
+    if ((max_count == 0) || (max_count < initial_count))
+    {
         return NULL;
     }
 
     cmsisPosix_semaphoreHandler_t *semaphore = malloc(sizeof(cmsisPosix_semaphoreHandler_t));
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         return NULL;
     }
 
-    if (sem_init(&semaphore->avail, 0, initial_count) != 0) {
+    if (sem_init(&semaphore->avail, 0, initial_count) != 0)
+    {
         free(semaphore);
         return NULL;
     }
 
-    if (sem_init(&semaphore->used, 0, max_count - initial_count) != 0) {
+    if (sem_init(&semaphore->used, 0, max_count - initial_count) != 0)
+    {
         sem_destroy(&semaphore->avail);
         free(semaphore);
         return NULL;
@@ -49,7 +53,8 @@ const char *osSemaphoreGetName (osSemaphoreId_t semaphore_id)
 {
     cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         NULL;
     }
 
@@ -60,16 +65,19 @@ osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
 {
     cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         return osErrorParameter;
     }
 
     // Try to reduce the number of available tokens
     int posix_ret;
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         // Do not wait
         posix_ret = sem_trywait(&semaphore->avail);
-    } else if (timeout == osWaitForever) {
+    } else if (timeout == osWaitForever)
+    {
         // Block indefinitely
         posix_ret = sem_wait(&semaphore->avail);
     } else {
@@ -80,11 +88,13 @@ osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
         posix_ret = sem_timedwait(&semaphore->avail, &ts);
     }
 
-    if (posix_ret == 0) {
+    if (posix_ret == 0)
+    {
         // Increment the number of used tokens
         sem_post(&semaphore->used);
         return osOK;
-    } else if (errno == ETIMEDOUT) {
+    } else if (errno == ETIMEDOUT)
+    {
         return osErrorTimeout;
     } else {
         return osErrorResource;
@@ -95,12 +105,14 @@ osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
 {
     cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         return osErrorParameter;
     }
 
     // Try to reduce the number of used tokens
-    if (sem_trywait(&semaphore->used) == 0) {
+    if (sem_trywait(&semaphore->used) == 0)
+    {
         // Increment the number of available tokens
         sem_post(&semaphore->avail);
         return osOK;
@@ -113,12 +125,14 @@ uint32_t osSemaphoreGetCount(osSemaphoreId_t semaphore_id)
 {
     cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         return 0;
     }
 
     int count = 0;
-    if ((sem_getvalue(&semaphore->avail, &count) < 0) || (count < 0)) {
+    if ((sem_getvalue(&semaphore->avail, &count) < 0) || (count < 0))
+    {
         count = 0;
     }
     return count;
@@ -128,7 +142,8 @@ osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
 {
     cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
-    if (semaphore == NULL) {
+    if (semaphore == NULL)
+    {
         return osErrorParameter;
     }
 
