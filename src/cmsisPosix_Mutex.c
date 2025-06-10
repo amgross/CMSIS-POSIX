@@ -6,6 +6,7 @@
 #include <string.h>
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
+#include "cmsisPosix_Common.h"
 
 // TODO add comment why we prefer not to use cb mem (So we alwais need to free and not depends on what we got)
 
@@ -91,22 +92,7 @@ osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout)
     else
     {
         struct timespec ts;
-
-        // Get current time
-        clock_gettime(CLOCK_REALTIME, &ts);  // Or CLOCK_MONOTONIC depending on use
-
-        // Total nanoseconds to wait
-        int64_t total_nanos = timeout * (int64_t)CP_CONFIG_NANO_IN_TICK;
-
-        // Add to current time
-        ts.tv_sec += total_nanos / 1000000000L;
-        ts.tv_nsec += total_nanos % 1000000000L;
-
-        // Normalize nsec if it overflows
-        if (ts.tv_nsec >= 1000000000L) {
-            ts.tv_sec += ts.tv_nsec / 1000000000L;
-            ts.tv_nsec %= 1000000000L;
-        }
+        cp_timeoutToTimespec(timeout, &ts);
 
         posix_ret = pthread_mutex_timedlock(&mutex->mutex, &ts);
         if(0 == posix_ret)
