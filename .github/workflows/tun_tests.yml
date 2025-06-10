@@ -11,7 +11,7 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Entire job timeout
+    timeout-minutes: 1  # Entire job timeout
 
     steps:
       - name: Checkout code
@@ -22,4 +22,4 @@ jobs:
 
       - name: Run make run in /tests/config1
         working-directory: ./tests/config1
-        run: timeout 300 make run  # Timeout after 5 minutes
+        run: timeout 60 make run  # Timeout after 1 minute

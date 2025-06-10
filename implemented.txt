@@ -1,0 +1,117 @@
+==== Kernel Management Functions ====
+osKernelInitialize - implemented
+osKernelGetInfo - not implemented (yet)
+osKernelGetState - not implemented (yet)
+osKernelStart - implemented
+osKernelLock - not implemented (yet)
+osKernelUnlock - not implemented (yet)
+osKernelRestoreLock - not implemented (yet)
+osKernelSuspend - not implemented (yet)
+osKernelResume - not implemented (yet)
+osKernelProtect - not implemented (yet)
+osKernelDestroyClass - not implemented (yet)
+osKernelGetTickCount - not implemented (yet)
+osKernelGetTickFreq - not implemented (yet)
+osKernelGetSysTimerCount - not implemented (yet)
+osKernelGetSysTimerFreq - not implemented (yet)
+
+==== Thread Management Functions ====
+osThreadNew - implemented
+osThreadGetName - implemented
+osThreadGetClass - not implemented (yet)
+osThreadGetZone - not implemented (yet)
+osThreadGetId - not implemented (yet)
+osThreadGetState - not implemented (yet)
+osThreadGetStackSize - not implemented (yet)
+osThreadGetStackSpace - not implemented (yet)
+osThreadSetPriority - not implemented (yet)
+osThreadGetPriority - not implemented (yet)
+osThreadYield - not implemented (yet)
+osThreadSuspend - not implemented (yet)
+osThreadResume - not implemented (yet)
+osThreadDetach - not implemented (yet)
+osThreadJoin - not implemented (yet)
+osThreadExit - not implemented (yet)
+osThreadTerminate - not implemented (yet)
+osThreadFeedWatchdog - not implemented (yet)
+osThreadProtectPrivileged - not implemented (yet)
+osThreadSuspendClass - not implemented (yet)
+osThreadResumeClass - not implemented (yet)
+osThreadTerminateZone - not implemented (yet)
+osThreadGetCount - not implemented (yet)
+osThreadEnumerate - not implemented (yet)
+
+==== Thread Flags Functions ====
+osThreadFlagsSet - not implemented (yet)
+osThreadFlagsClear - not implemented (yet)
+osThreadFlagsGet - not implemented (yet)
+osThreadFlagsWait - not implemented (yet)
+
+==== Generic Wait Functions ====
+osDelay - implemented
+osDelayUntil - not implemented (yet)
+
+==== Timer Management Functions ====
+osTimerNew - not implemented (yet)
+osTimerGetName - not implemented (yet)
+osTimerStart - not implemented (yet)
+osTimerStop - not implemented (yet)
+osTimerIsRunning - not implemented (yet)
+osTimerDelete - not implemented (yet)
+
+==== Event Flags Management Functions ====
+osEventFlagsNew - not implemented (yet)
+osEventFlagsGetName - not implemented (yet)
+osEventFlagsSet - not implemented (yet)
+osEventFlagsClear - not implemented (yet)
+osEventFlagsGet - not implemented (yet)
+osEventFlagsWait - not implemented (yet)
+osEventFlagsDelete - not implemented (yet)
+
+==== Mutex Management Functions ====
+osMutexNew - implemented
+osMutexGetName - implemented
+osMutexAcquire - implemented
+osMutexRelease - implemented
+osMutexGetOwner - not implemented (yet)
+osMutexDelete - implemented
+
+==== Semaphore Management Functions ====
+osSemaphoreNew - implemented
+osSemaphoreGetName - implemented
+osSemaphoreAcquire - implemented
+osSemaphoreRelease - implemented
+osSemaphoreGetCount - implemented
+osSemaphoreDelete - implemented
+
+==== Memory Pool Management Functions ====
+osMemoryPoolNew - implemented
+osMemoryPoolGetName - implemented
+osMemoryPoolAlloc - implemented
+osMemoryPoolFree - implemented
+osMemoryPoolGetCapacity - implemented
+osMemoryPoolGetBlockSize - implemented
+osMemoryPoolGetCount - implemented
+osMemoryPoolGetSpace - implemented
+osMemoryPoolDelete - implemented
+
+==== Message Queue Management Functions ====
+osMessageQueueNew - implemented
+osMessageQueueGetName - implemented
+osMessageQueuePut - implemented
+osMessageQueueGet - implemented
+osMessageQueueGetCapacity - implemented
+osMessageQueueGetMsgSize - implemented
+osMessageQueueGetCount - implemented
+osMessageQueueGetSpace - implemented
+osMessageQueueReset - not implemented (yet)
+osMessageQueueDelete - implemented
+
+==== Handler Functions ====
+osWatchdogAlarm_Handler - not implemented (yet)
+
+// ==== Zone Management Function ====
+osZoneSetup_Callback - not implemented (yet)
+
+==== Exception Faults ====
+osFaultResume - not implemented (yet)
