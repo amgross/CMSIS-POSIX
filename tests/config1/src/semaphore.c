@@ -65,22 +65,22 @@ void Thread1(void *argument)
   (void)argument;
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, osWaitForever), osOK);
-  printf("[Thread1] Acquired 1st token\n");
+  TEST_LOG_INFO("[Thread1] Acquired 1st token\n");
 
   osDelay(50);  // Delay for 50 ticks
   CP_ASSERT_EQ(osSemaphoreGetCount(mySemaphore), 0);
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, 0), osErrorResource);
-  printf("[Thread1] Timed-out acquiring 2nd token\n");
+  TEST_LOG_INFO("[Thread1] Timed-out acquiring 2nd token\n");
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, 1000), osOK);
-  printf("[Thread1] Acquired 2nd token\n");
+  TEST_LOG_INFO("[Thread1] Acquired 2nd token\n");
 
   osDelay(100);  // Delay for 100 ticks
   CP_ASSERT_EQ(osSemaphoreRelease(mySemaphore), osOK);
   CP_ASSERT_EQ(osSemaphoreRelease(mySemaphore), osOK);
-  printf("[Thread1] Released both token\n");
+  TEST_LOG_INFO("[Thread1] Released both token\n");
 
-  printf("[Thread1] Done\n");
+  TEST_LOG_INFO("[Thread1] Done\n");
   thread1 = false;
 }
 
@@ -89,23 +89,23 @@ void Thread2(void *argument)
   (void)argument;
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, osWaitForever), osOK);
-  printf("[Thread2] Acquired 1st token\n");
+  TEST_LOG_INFO("[Thread2] Acquired 1st token\n");
 
   osDelay(100);  // Delay for 100 ticks
   CP_ASSERT_EQ(osSemaphoreRelease(mySemaphore), osOK);
-  printf("[Thread2] Released 1st token\n");
+  TEST_LOG_INFO("[Thread2] Released 1st token\n");
 
   osDelay(50);  // Delay for 50 ticks
   CP_ASSERT_EQ(osSemaphoreGetCount(mySemaphore), 0);
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, 0), osErrorResource);
-  printf("[Thread2] Timed-out acquiring 2nd token\n");
+  TEST_LOG_INFO("[Thread2] Timed-out acquiring 2nd token\n");
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, osWaitForever), osOK);
-  printf("[Thread2] Acquired 2nd token\n");
+  TEST_LOG_INFO("[Thread2] Acquired 2nd token\n");
 
   CP_ASSERT_EQ(osSemaphoreRelease(mySemaphore), osOK);
-  printf("[Thread2] Released 2nd token\n");
+  TEST_LOG_INFO("[Thread2] Released 2nd token\n");
 
-  printf("[Thread2] Done\n");
+  TEST_LOG_INFO("[Thread2] Done\n");
   thread2 = false;
 }

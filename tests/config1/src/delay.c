@@ -44,9 +44,9 @@ void Thread1(void *argument)
   // Specify 200ms in terms of ticks
   int64_t ticks = (200 * (int64_t)1000000) / CP_CONFIG_NANO_IN_TICK;
   CP_ASSERT_EQ(osDelay(ticks), osOK);
-  printf("[Thread1] Delayed for 200ms\n");
+  TEST_LOG_INFO("[Thread1] Delayed for 200ms\n");
 
-  printf("[Thread1] Done\n");
+  TEST_LOG_INFO("[Thread1] Done\n");
   thread1 = false;
 }
 
@@ -57,8 +57,8 @@ void Thread2(void *argument)
   // Specify 400ms in terms of ticks
   int64_t ticks = (400 * (int64_t)1000000) / CP_CONFIG_NANO_IN_TICK;
   CP_ASSERT_EQ(osDelay(ticks), osOK);
-  printf("[Thread2] Delayed for 400ms\n");
+  TEST_LOG_INFO("[Thread2] Delayed for 400ms\n");
 
-  printf("[Thread2] Done\n");
+  TEST_LOG_INFO("[Thread2] Done\n");
   thread2 = false;
 }

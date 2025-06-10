@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef ENABLE_TEST_LOG
+#define TEST_LOG_INFO(fmt, ...) printf("[INFO]  (%s:%d): " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#else
+#define TEST_LOG_INFO(fmt, ...)  ((void)0)
+#endif
+
 #define CP_COLOR_RED     "\033[31m"
 #define CP_COLOR_GREEN   "\033[32m"
 #define CP_COLOR_RESET   "\033[0m"

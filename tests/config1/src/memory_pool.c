@@ -69,25 +69,25 @@ void Thread1(void *argument)
 
   block1 = osMemoryPoolAlloc(myMemoryPool, osWaitForever);
   CP_ASSERT_TRUE(block1 != NULL);
-  printf("[Thread1] Allocated 1st memory block\n");
+  TEST_LOG_INFO("[Thread1] Allocated 1st memory block\n");
 
   osDelay(50);  // Delay for 50 ticks
   CP_ASSERT_TRUE(osMemoryPoolGetCount(myMemoryPool) == 2);
 
   block2 = osMemoryPoolAlloc(myMemoryPool, 0);
   CP_ASSERT_TRUE(block2 == NULL);
-  printf("[Thread1] Timed-out allocating 2nd memory block\n");
+  TEST_LOG_INFO("[Thread1] Timed-out allocating 2nd memory block\n");
 
   block2 = osMemoryPoolAlloc(myMemoryPool, 1000);
   CP_ASSERT_TRUE(block2 != NULL);
-  printf("[Thread1] Allocated 2nd memory block\n");
+  TEST_LOG_INFO("[Thread1] Allocated 2nd memory block\n");
 
   osDelay(100);  // Delay for 100 ticks
   CP_ASSERT_TRUE(osMemoryPoolFree(myMemoryPool, block1) == osOK);
   CP_ASSERT_TRUE(osMemoryPoolFree(myMemoryPool, block2) == osOK);
-  printf("[Thread1] Freed both memory block\n");
+  TEST_LOG_INFO("[Thread1] Freed both memory block\n");
 
-  printf("[Thread1] Done\n");
+  TEST_LOG_INFO("[Thread1] Done\n");
   thread1 = false;
 }
 
@@ -99,26 +99,26 @@ void Thread2(void *argument)
 
   block1 = osMemoryPoolAlloc(myMemoryPool, osWaitForever);
   CP_ASSERT_TRUE(block1 != NULL);
-  printf("[Thread2] Allocated 1st memory block\n");
+  TEST_LOG_INFO("[Thread2] Allocated 1st memory block\n");
 
   osDelay(100);  // Delay for 100 ticks
   CP_ASSERT_TRUE(osMemoryPoolFree(myMemoryPool, block1) == osOK);
-  printf("[Thread2] Freed 1st memory block\n");
+  TEST_LOG_INFO("[Thread2] Freed 1st memory block\n");
 
   osDelay(50);  // Delay for 50 ticks
   CP_ASSERT_TRUE(osMemoryPoolGetCount(myMemoryPool) == 2);
 
   block2 = osMemoryPoolAlloc(myMemoryPool, 0);
   CP_ASSERT_TRUE(block2 == NULL);
-  printf("[Thread2] Timed-out allocating 2nd memory block\n");
+  TEST_LOG_INFO("[Thread2] Timed-out allocating 2nd memory block\n");
 
   block2 = osMemoryPoolAlloc(myMemoryPool, osWaitForever);
   CP_ASSERT_TRUE(block2 != NULL);
-  printf("[Thread2] Allocated 2nd memory block\n");
+  TEST_LOG_INFO("[Thread2] Allocated 2nd memory block\n");
 
   CP_ASSERT_TRUE(osMemoryPoolFree(myMemoryPool, block2) == osOK);
-  printf("[Thread2] Freed 2nd memory block\n");
+  TEST_LOG_INFO("[Thread2] Freed 2nd memory block\n");
 
-  printf("[Thread2] Done\n");
+  TEST_LOG_INFO("[Thread2] Done\n");
   thread2 = false;
 }

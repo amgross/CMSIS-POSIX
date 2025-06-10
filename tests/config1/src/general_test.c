@@ -28,24 +28,24 @@ void Thread1(void *argument)
   (void)argument;
   for (int i = 0; i < 5; ++i) {
     if (osMutexAcquire(myMutex, osWaitForever) == osOK) {
-      printf("[Thread1] Acquired mutex\n");
-      printf("[Thread1] Doing work\n");
-      printf("[Thread1] Releasing mutex\n");
+      TEST_LOG_INFO("[Thread1] Acquired mutex\n");
+      TEST_LOG_INFO("[Thread1] Doing work\n");
+      TEST_LOG_INFO("[Thread1] Releasing mutex\n");
       osMutexRelease(myMutex);
     }
   }
-  printf("[Thread1] Done\n");
+  TEST_LOG_INFO("[Thread1] Done\n");
 }
 
 void Thread2(void *argument) {
   (void)argument;
   for (int i = 0; i < 5; ++i) {
     if (osMutexAcquire(myMutex, osWaitForever) == osOK) {
-      printf("[Thread2] Acquired mutex\n");
-      printf("[Thread2] Doing work\n");
-      printf("[Thread2] Releasing mutex\n");
+      TEST_LOG_INFO("[Thread2] Acquired mutex\n");
+      TEST_LOG_INFO("[Thread2] Doing work\n");
+      TEST_LOG_INFO("[Thread2] Releasing mutex\n");
       osMutexRelease(myMutex);
     }
   }
-  printf("[Thread2] Done\n");
+  TEST_LOG_INFO("[Thread2] Done\n");
 }

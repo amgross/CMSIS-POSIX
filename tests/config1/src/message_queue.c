@@ -161,7 +161,7 @@ void Thread1(void *argument)
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, 0, 0), osOK);
   }
 
-  printf("[Thread1] Done\n");
+  TEST_LOG_INFO("[Thread1] Done\n");
   thread1 = false;
 }
 
@@ -177,7 +177,7 @@ void Thread2(void *argument)
   }
   CP_ASSERT_EQ(osMessageQueueGetCount(myMessageQueue), 0);
 
-  printf("[Thread2] Done\n");
+  TEST_LOG_INFO("[Thread2] Done\n");
   thread2 = false;
 }
 
@@ -192,7 +192,7 @@ void Thread3(void *argument)
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, msg.value, 0), osOK);
   }
 
-  printf("[Thread3] Done\n");
+  TEST_LOG_INFO("[Thread3] Done\n");
   thread3 = false;
 }
 
@@ -207,6 +207,6 @@ void Thread4(void *argument)
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, msg.value, 0), osOK);
   }
 
-  printf("[Thread4] Done\n");
+  TEST_LOG_INFO("[Thread4] Done\n");
   thread4 = false;
 }
