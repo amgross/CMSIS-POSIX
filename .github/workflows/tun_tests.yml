@@ -1,0 +1,25 @@
+name: Run Tests on PR and Main
+
+on:
+  pull_request:
+    branches:
+      - '**'  # Trigger on PRs to any branch
+  push:
+    branches:
+      - main  # Trigger on push to main (e.g., after merge)
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # Entire job timeout
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y make
+
+      - name: Run make run in /tests/config1
+        working-directory: ./tests/config1
+        run: timeout 300 make run  # Timeout after 5 minutes
