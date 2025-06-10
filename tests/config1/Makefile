@@ -48,24 +48,29 @@ $(BUILD_DIR)/main_%.o: $(MAIN_SRC)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(CONFIG_BINS)
-	@failed="" && \
+	@failed="" && passed=0 && failed_count=0 && \
 	for bin in $^; do \
 		printf "\033[0;32m==> Running $$bin...\033[0m\n"; \
 		if $$bin; then \
 			printf "\033[0;32m✔ $$bin passed\033[0m\n"; \
+			passed=$$((passed + 1)); \
 		else \
 			printf "\033[0;31m✘ $$bin failed\033[0m\n"; \
 			failed="$$failed $$bin"; \
+			failed_count=$$((failed_count + 1)); \
 		fi; \
 	done; \
+	total=$$((passed + failed_count)); \
 	if [ -n "$$failed" ]; then \
 		printf "\033[0;31mSome tests failed:\033[0m\n"; \
 		for f in $$failed; do \
 			printf "  \033[0;31m✘ $$f\033[0m\n"; \
 		done; \
+		printf "\033[0;33mSummary: $$passed passed, $$failed_count failed, $$total total\033[0m\n"; \
 		exit 1; \
 	else \
 		printf "\033[0;32mAll tests passed ✅\033[0m\n"; \
+		printf "\033[0;32mSummary: $$passed passed, 0 failed, $$total total\033[0m\n"; \
 	fi
 
 
