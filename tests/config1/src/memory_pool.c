@@ -7,15 +7,24 @@
 static osMemoryPoolId_t myMemoryPool;
 
 // Thread function prototypes
+void Thread_manager(void *argument);
 void Thread1(void *argument);
 void Thread2(void *argument);
 bool thread1 = true;
 bool thread2 = true;
-void test_start(void) {
-  printf("CMSIS-RTOS2 memory pool test start\n");
+void test_start(void)
+{
 
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
+  osThreadNew(Thread_manager, NULL, NULL);
+
+  osKernelStart();                     // Start scheduler
+}
+
+void Thread_manager(void *argument)
+{
+  (void)argument;
   myMemoryPool = osMemoryPoolNew(2, 128, NULL);   // Create memory pool with default attributes
   CP_ASSERT_NE(myMemoryPool, NULL);
   CP_ASSERT_EQ(osMemoryPoolGetCapacity(myMemoryPool), 2);
@@ -38,15 +47,20 @@ void test_start(void) {
   CP_ASSERT_EQ(osMemoryPoolDelete(NULL), osErrorParameter);
 
   osThreadNew(Thread1, NULL, NULL);     // Create Thread1
+
   osThreadNew(Thread2, NULL, NULL);     // Create Thread2
 
   // Wait for the threads to terminate
-  while (thread1 || thread2) {}
+  while (thread1 || thread2)
+  {
+    osDelay(10);
+  }
 
   CP_ASSERT_EQ(osMemoryPoolDelete(myMemoryPool), osOK);
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void)argument;
   void *block1;
   void *block2;
@@ -75,7 +89,8 @@ void Thread1(void *argument) {
   thread1 = false;
 }
 
-void Thread2(void *argument) {
+void Thread2(void *argument)
+{
   (void)argument;
   void *block1;
   void *block2;

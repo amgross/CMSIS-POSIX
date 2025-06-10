@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
 #include "cmsisPosix_TestInfra.h"
 
@@ -15,6 +14,7 @@ typedef struct {
 } message_t;
 
 // Thread function prototypes
+void Thread_manager(void *argument);
 void Thread1(void *argument);
 void Thread2(void *argument);
 void Thread3(void *argument);
@@ -23,13 +23,19 @@ bool thread1 = true;
 bool thread2 = true;
 bool thread3 = true;
 bool thread4 = true;
-void test_start(void) {
-  printf("CMSIS-RTOS2 message queue test start\n");
-
-  srand(time(NULL));    // Initialise random number generator
-
+void test_start(void)
+{
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
+  osThreadNew(Thread_manager, NULL, NULL);
+
+  osKernelStart();                     // Start scheduler
+
+}
+
+void Thread_manager(void *argument)
+{
+  (void)argument;
   message_t msg;
   myMessageQueue = osMessageQueueNew(4, sizeof(message_t), NULL);   // Create message queue with default attributes
   CP_ASSERT_NE(myMessageQueue, NULL);
@@ -142,11 +148,13 @@ void test_start(void) {
   CP_ASSERT_EQ(osMessageQueueDelete(myMessageQueue), osOK);
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void)argument;
   message_t msg;
 
-  for (int n = 0;  n < 100;  n++) {
+  for (int n = 0;  n < 100;  n++)
+  {
     osDelay(5);
     msg.value = n;
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, 0, 0), osOK);
@@ -156,11 +164,13 @@ void Thread1(void *argument) {
   thread1 = false;
 }
 
-void Thread2(void *argument) {
+void Thread2(void *argument)
+{
   (void)argument;
   message_t msg;
 
-  for (int n = 0;  n < 100;  n++) {
+  for (int n = 0;  n < 100;  n++)
+  {
     CP_ASSERT_EQ(osMessageQueueGet(myMessageQueue, &msg, NULL, 10), osOK);
     CP_ASSERT_EQ(msg.value, n);
   }
@@ -170,11 +180,13 @@ void Thread2(void *argument) {
   thread2 = false;
 }
 
-void Thread3(void *argument) {
+void Thread3(void *argument)
+{
   (void)argument;
   message_t msg;
 
-  for (int n = 0;  n < 50;  n++) {
+  for (int n = 0;  n < 50;  n++)
+  {
     msg.value = rand() % 256;
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, msg.value, 0), osOK);
   }
@@ -183,11 +195,13 @@ void Thread3(void *argument) {
   thread3 = false;
 }
 
-void Thread4(void *argument) {
+void Thread4(void *argument)
+{
   (void)argument;
   message_t msg;
 
-  for (int n = 0;  n < 50;  n++) {
+  for (int n = 0;  n < 50;  n++)
+  {
     msg.value = rand() % 256;
     CP_ASSERT_EQ(osMessageQueuePut(myMessageQueue, &msg, msg.value, 0), osOK);
   }

@@ -7,14 +7,23 @@
 static osSemaphoreId_t mySemaphore;
 
 // Thread function prototypes
+void Thread_manager(void *argument);
 void Thread1(void *argument);
 void Thread2(void *argument);
 bool thread1 = true;
 bool thread2 = true;
-void test_start(void) {
-  printf("CMSIS-RTOS2 semaphore test start\n");
-
+void test_start(void)
+{
   osKernelInitialize();                 // Initialize CMSIS-RTOS
+
+  osThreadNew(Thread_manager, NULL, NULL);
+
+  osKernelStart();                     // Start scheduler
+}
+
+void Thread_manager(void *argument)
+{
+  (void)argument;
 
   mySemaphore = osSemaphoreNew(2, 0, NULL);   // Create semaphore with initially zero tokens
   CP_ASSERT_NE(mySemaphore, NULL);
@@ -49,7 +58,8 @@ void test_start(void) {
   CP_ASSERT_EQ(osSemaphoreDelete(mySemaphore), osOK);
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void)argument;
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, osWaitForever), osOK);
@@ -72,7 +82,8 @@ void Thread1(void *argument) {
   thread1 = false;
 }
 
-void Thread2(void *argument) {
+void Thread2(void *argument)
+{
   (void)argument;
 
   CP_ASSERT_EQ(osSemaphoreAcquire(mySemaphore, osWaitForever), osOK);

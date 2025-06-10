@@ -9,24 +9,20 @@ static osMutexId_t myMutex;
 // Thread function prototypes
 void Thread1(void *argument);
 void Thread2(void *argument);
-bool thread1 = true;
-bool thread2 = true;
-void test_start(void) {
-  printf("CMSIS-RTOS2 mutex test start\n");
 
+void test_start(void)
+{
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   myMutex = osMutexNew(NULL);          // Create mutex with default attributes
 
   osThreadNew(Thread1, NULL, NULL);    // Create Thread1
   osThreadNew(Thread2, NULL, NULL);    // Create Thread2
 
-//   osKernelStart();                     // Start scheduler
-
-  // Should never reach here
-  while (thread1 || thread2) {}
+  osKernelStart();                     // Start scheduler
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void)argument;
   for (int i = 0; i < 5; ++i) {
     if (osMutexAcquire(myMutex, osWaitForever) == osOK) {
@@ -37,7 +33,6 @@ void Thread1(void *argument) {
     }
   }
   printf("[Thread1] Done\n");
-  thread1 = false;
 }
 
 void Thread2(void *argument) {
@@ -51,5 +46,4 @@ void Thread2(void *argument) {
     }
   }
   printf("[Thread2] Done\n");
-  thread2 = false;
 }

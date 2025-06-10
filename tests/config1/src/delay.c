@@ -6,14 +6,24 @@
 #include "cmsisPosix_TestInfra.h"
 
 // Thread function prototypes
+void Thread_manager(void *argument);
 void Thread1(void *argument);
 void Thread2(void *argument);
 bool thread1 = true;
 bool thread2 = true;
-void test_start(void) {
-  printf("CMSIS-RTOS2 delay test start\n");
-
+void test_start(void)
+{
   osKernelInitialize();                 // Initialize CMSIS-RTOS
+
+  osThreadNew(Thread_manager, NULL, NULL); // Create the manager thread
+
+  osKernelStart();
+
+}
+
+void Thread_manager(void *argument)
+{
+  (void)argument;
 
   osThreadNew(Thread1, NULL, NULL);     // Create Thread1
   osThreadNew(Thread2, NULL, NULL);     // Create Thread2
@@ -26,7 +36,8 @@ void test_start(void) {
   CP_ASSERT_EQ(thread2, false);
 }
 
-void Thread1(void *argument) {
+void Thread1(void *argument)
+{
   (void)argument;
 
   // Specify 200ms in terms of ticks
@@ -38,7 +49,8 @@ void Thread1(void *argument) {
   thread1 = false;
 }
 
-void Thread2(void *argument) {
+void Thread2(void *argument)
+{
   (void)argument;
 
   // Specify 400ms in terms of ticks

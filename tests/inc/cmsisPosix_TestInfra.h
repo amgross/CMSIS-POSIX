@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define CP_COLOR_RED     "\033[31m"
 #define CP_COLOR_GREEN   "\033[32m"
@@ -36,6 +37,10 @@ extern void test_start(void);
 
 int main(void)
 {
+    time_t seed = time(NULL);
+    printf("test seed - %ld\n", seed);
+    srand(seed);    // Initialise random number generator
+
     test_start();
 
     return 0;
