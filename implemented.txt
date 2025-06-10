@@ -20,7 +20,7 @@ osThreadNew - implemented
 osThreadGetName - implemented
 osThreadGetClass - not implemented (yet)
 osThreadGetZone - not implemented (yet)
-osThreadGetId - not implemented (yet)
+osThreadGetId - implemented
 osThreadGetState - not implemented (yet)
 osThreadGetStackSize - not implemented (yet)
 osThreadGetStackSpace - not implemented (yet)

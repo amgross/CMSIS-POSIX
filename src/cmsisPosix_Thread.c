@@ -47,7 +47,8 @@ static void *cp_threadWrapper(void *arg)
 osStatus_t cp_threadInitSystem()
 {
     uint32_t threadMaxPriority;
-    if (pthread_key_create(&cp_threadDataKey, cp_threadDataCleanup) != 0) {
+    if (pthread_key_create(&cp_threadDataKey, cp_threadDataCleanup) != 0)
+    {
         return osError;
     }
 
@@ -62,7 +63,8 @@ osStatus_t cp_threadInitSystem()
     return osOK;
 }
 
-osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr_t *attr) {
+osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr_t *attr)
+{
     (void)attr;
     pthread_t thread;
     pthread_attr_t pthread_attr;
@@ -103,7 +105,8 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
     }
 
     if (pthread_attr_setschedpolicy(&pthread_attr, CP_SCHED) != 0 ||
-        pthread_attr_setschedparam(&pthread_attr, &sched) != 0) {
+        pthread_attr_setschedparam(&pthread_attr, &sched) != 0)
+    {
         printf("Warning: Unable to set thread scheduling. Try running with sudo.\n");
     }
 #endif
@@ -117,7 +120,8 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
     int result = pthread_create(&thread, &pthread_attr, cp_threadWrapper, threadData);
     pthread_attr_destroy(&pthread_attr);
 
-    if (result != 0) {
+    if (result != 0)
+    {
         free(threadData);
         return NULL;
     }
@@ -136,4 +140,11 @@ const char *osThreadGetName (osThreadId_t thread_id)
     }
 
     return ((cmsisPosix_threadHandler_t *)thread_id)->name;
+}
+
+osThreadId_t osThreadGetId (void)
+{
+    cmsisPosix_threadHandler_t *thread_handler = (cmsisPosix_threadHandler_t *)pthread_getspecific(cp_threadDataKey);
+
+    return (osThreadId_t)thread_handler;
 }
