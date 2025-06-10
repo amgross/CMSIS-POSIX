@@ -19,6 +19,7 @@ void test_start(void)
 
   osKernelStart();
 
+  CP_UASSERT_NREACHABLE();
 }
 
 void Thread_manager(void *argument)

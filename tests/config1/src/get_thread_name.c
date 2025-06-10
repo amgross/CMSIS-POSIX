@@ -21,12 +21,11 @@ void test_start(void) {
 
 
   const char *name = osThreadGetName(thread_id);
-  if(strcmp(name, THREAD_NAME))
-  {
-    assert(false);
-  }
+  CP_ASSERT_STREQ(name, THREAD_NAME);
 
   osKernelStart();                     // Start scheduler
+
+  CP_UASSERT_NREACHABLE();
 }
 
 void Thread1(void *argument) {

@@ -19,6 +19,8 @@ void test_start(void)
   osThreadNew(Thread2, NULL, NULL);    // Create Thread2
 
   osKernelStart();                     // Start scheduler
+
+  CP_UASSERT_NREACHABLE();
 }
 
 void Thread1(void *argument)

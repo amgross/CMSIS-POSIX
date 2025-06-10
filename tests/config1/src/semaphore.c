@@ -19,6 +19,8 @@ void test_start(void)
   osThreadNew(Thread_manager, NULL, NULL);
 
   osKernelStart();                     // Start scheduler
+
+  CP_UASSERT_NREACHABLE();
 }
 
 void Thread_manager(void *argument)

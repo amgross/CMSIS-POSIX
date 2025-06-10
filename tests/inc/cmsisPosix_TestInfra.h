@@ -33,6 +33,30 @@
         } \
     } while (0)
 
+#define CP_ASSERT_STREQ(a, b) \
+    do { \
+        if (strcmp((a), (b)) != 0) { \
+            fprintf(stderr, CP_COLOR_RED "ASSERT STREQ FAILED" CP_COLOR_RESET ": %s == %s\n  Got \"%s\" != \"%s\"\n  in %s:%d\n", \
+                    #a, #b, (a), (b), __FILE__, __LINE__); \
+            exit(EXIT_FAILURE); \
+        } \
+    } while (0)
+
+#define CP_ASSERT_STRNE(a, b) \
+    do { \
+        if (strcmp((a), (b)) == 0) { \
+            fprintf(stderr, CP_COLOR_RED "ASSERT STRNE FAILED" CP_COLOR_RESET ": %s != %s\n  Got \"%s\" == \"%s\"\n  in %s:%d\n", \
+                    #a, #b, (a), (b), __FILE__, __LINE__); \
+            exit(EXIT_FAILURE); \
+        } \
+    } while (0)
+
+#define CP_UASSERT_NREACHABLE() \
+    do { \
+        fprintf(stderr, CP_COLOR_RED "UNREACHABLE CODE REACHED" CP_COLOR_RESET "\n  in %s:%d\n", __FILE__, __LINE__); \
+        exit(EXIT_FAILURE); \
+    } while (0)
+
 extern void test_start(void);
 
 int main(void)
