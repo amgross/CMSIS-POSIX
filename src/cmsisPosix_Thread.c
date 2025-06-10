@@ -148,3 +148,8 @@ osThreadId_t osThreadGetId (void)
 
     return (osThreadId_t)thread_handler;
 }
+
+__NO_RETURN void osThreadExit(void)
+{
+    pthread_exit(NULL); // Terminates the calling thread
+}

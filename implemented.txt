@@ -31,7 +31,7 @@ osThreadSuspend - not implemented (yet)
 osThreadResume - not implemented (yet)
 osThreadDetach - not implemented (yet)
 osThreadJoin - not implemented (yet)
-osThreadExit - not implemented (yet)
+osThreadExit - implemented
 osThreadTerminate - not implemented (yet)
 osThreadFeedWatchdog - not implemented (yet)
 osThreadProtectPrivileged - not implemented (yet)
