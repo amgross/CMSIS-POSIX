@@ -16,7 +16,7 @@ typedef struct
     const char *name;   // Name of semaphore
     sem_t avail;        // Number of tokens available in semaphore
     sem_t used;         // Number of tokens used in semaphore
-} cp_semaphoreData_t;
+} cmsisPosix_semaphoreHandler_t;
 
 osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const osSemaphoreAttr_t *attr)
 {
@@ -24,7 +24,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
         return NULL;
     }
 
-    cp_semaphoreData_t *semaphore = malloc(sizeof(cp_semaphoreData_t));
+    cmsisPosix_semaphoreHandler_t *semaphore = malloc(sizeof(cmsisPosix_semaphoreHandler_t));
     if (semaphore == NULL) {
         return NULL;
     }
@@ -47,7 +47,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
 
 const char *osSemaphoreGetName (osSemaphoreId_t semaphore_id)
 {
-    cp_semaphoreData_t *semaphore = (cp_semaphoreData_t *)semaphore_id;
+    cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
     if (semaphore == NULL) {
         NULL;
@@ -58,7 +58,7 @@ const char *osSemaphoreGetName (osSemaphoreId_t semaphore_id)
 
 osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
 {
-    cp_semaphoreData_t *semaphore = (cp_semaphoreData_t *)semaphore_id;
+    cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
     if (semaphore == NULL) {
         return osErrorParameter;
@@ -93,7 +93,7 @@ osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
 
 osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
 {
-    cp_semaphoreData_t *semaphore = (cp_semaphoreData_t *)semaphore_id;
+    cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
     if (semaphore == NULL) {
         return osErrorParameter;
@@ -111,7 +111,7 @@ osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
 
 uint32_t osSemaphoreGetCount(osSemaphoreId_t semaphore_id)
 {
-    cp_semaphoreData_t *semaphore = (cp_semaphoreData_t *)semaphore_id;
+    cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
     if (semaphore == NULL) {
         return 0;
@@ -126,7 +126,7 @@ uint32_t osSemaphoreGetCount(osSemaphoreId_t semaphore_id)
 
 osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
 {
-    cp_semaphoreData_t *semaphore = (cp_semaphoreData_t *)semaphore_id;
+    cmsisPosix_semaphoreHandler_t *semaphore = (cmsisPosix_semaphoreHandler_t *)semaphore_id;
     
     if (semaphore == NULL) {
         return osErrorParameter;

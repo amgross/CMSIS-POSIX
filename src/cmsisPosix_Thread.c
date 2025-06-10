@@ -21,7 +21,7 @@ typedef struct
     void *arg;
     const char *name;
     pthread_t thread;
-} cp_threadData_t;
+} cmsisPosix_threadHandler_t;
 
 // Cleanup function to free allocated memory
 static void cp_threadDataCleanup(void *ptr)
@@ -34,7 +34,7 @@ static void cp_threadDataCleanup(void *ptr)
  */
 static void *cp_threadWrapper(void *arg)
 {
-    cp_threadData_t *threadData = (cp_threadData_t *)arg;
+    cmsisPosix_threadHandler_t *threadData = (cmsisPosix_threadHandler_t *)arg;
 
     pthread_setspecific(cp_threadDataKey, threadData);
 
@@ -66,7 +66,7 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
     (void)attr;
     pthread_t thread;
     pthread_attr_t pthread_attr;
-    cp_threadData_t *threadData;
+    cmsisPosix_threadHandler_t *threadData;
 
     if (NULL == func)
     {
@@ -74,7 +74,7 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
     }
 
     // Allocate wrapper to pass function + argument
-    threadData = malloc(sizeof(cp_threadData_t));
+    threadData = malloc(sizeof(cmsisPosix_threadHandler_t));
     if (NULL == threadData)
     {
         return NULL;
@@ -135,5 +135,5 @@ const char *osThreadGetName (osThreadId_t thread_id)
         return NULL;
     }
 
-    return ((cp_threadData_t *)thread_id)->name;
+    return ((cmsisPosix_threadHandler_t *)thread_id)->name;
 }

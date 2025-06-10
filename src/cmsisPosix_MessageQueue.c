@@ -25,7 +25,7 @@ typedef struct
     uint8_t *priorities;        // Array of message priorities
     uint32_t head;              // Index to head of circular buffer
     uint32_t tail;              // Index to tail of circular buffer
-} cp_msgQueueData_t;
+} cmsisPosix_messageQueueHandler_t;
 
 // Finds the next index into a circular queue with a given capacity 
 static uint32_t next_idx(uint32_t idx, uint32_t capacity)
@@ -49,7 +49,7 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
     uint32_t align_size = sizeof(max_align_t);
     uint32_t padded_msg_size = align_size * ((msg_size + align_size - 1) / align_size);
 
-    cp_msgQueueData_t *queue = malloc(sizeof(cp_msgQueueData_t));
+    cmsisPosix_messageQueueHandler_t *queue = malloc(sizeof(cmsisPosix_messageQueueHandler_t));
     if (queue == NULL) {
         return NULL;
     }
@@ -93,7 +93,7 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
 
 const char *osMessageQueueGetName (osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         NULL;
@@ -104,7 +104,7 @@ const char *osMessageQueueGetName (osMessageQueueId_t mq_id)
 
 osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint8_t msg_prio, uint32_t timeout)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if ((queue == NULL) || (msg_ptr == NULL)) {
         return osErrorParameter;
@@ -166,7 +166,7 @@ osStatus_t osMessageQueuePut(osMessageQueueId_t mq_id, const void* msg_ptr, uint
 
 osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *msg_prio, uint32_t timeout)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if ((queue == NULL) || (msg_ptr == NULL)) {
         return osErrorParameter;
@@ -212,7 +212,7 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
 
 uint32_t osMessageQueueGetCapacity(osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         return 0;
@@ -223,7 +223,7 @@ uint32_t osMessageQueueGetCapacity(osMessageQueueId_t mq_id)
 
 uint32_t osMessageQueueGetMsgSize(osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         return 0;
@@ -234,7 +234,7 @@ uint32_t osMessageQueueGetMsgSize(osMessageQueueId_t mq_id)
 
 uint32_t osMessageQueueGetCount(osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         return 0;
@@ -249,7 +249,7 @@ uint32_t osMessageQueueGetCount(osMessageQueueId_t mq_id)
 
 uint32_t osMessageQueueGetSpace(osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         return 0;
@@ -264,7 +264,7 @@ uint32_t osMessageQueueGetSpace(osMessageQueueId_t mq_id)
 
 osStatus_t osMessageQueueDelete(osMessageQueueId_t mq_id)
 {
-    cp_msgQueueData_t *queue = (cp_msgQueueData_t *)mq_id;
+    cmsisPosix_messageQueueHandler_t *queue = (cmsisPosix_messageQueueHandler_t *)mq_id;
     
     if (queue == NULL) {
         return osErrorParameter;

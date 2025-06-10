@@ -22,7 +22,7 @@ typedef struct
     sem_t sem;                  // Semaphore to keep track of block usage
     pthread_mutex_t mutex;      // Mutex for used_flags
     bool *used_flags;           // Array of status flags (true if block is used)
-} cp_memPoolData_t;
+} cmsisPosix_memoryPoolHandler_t;
 
 osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, const osMemoryPoolAttr_t *attr)
 {
@@ -34,7 +34,7 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
     uint32_t align_size = sizeof(max_align_t);
     uint32_t padded_block_size = align_size * ((block_size + align_size - 1) / align_size);
 
-    cp_memPoolData_t *mem_pool = malloc(sizeof(cp_memPoolData_t));
+    cmsisPosix_memoryPoolHandler_t *mem_pool = malloc(sizeof(cmsisPosix_memoryPoolHandler_t));
     if (mem_pool == NULL) {
         return NULL;
     }
@@ -69,7 +69,7 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
 
 const char *osMemoryPoolGetName (osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         NULL;
@@ -80,7 +80,7 @@ const char *osMemoryPoolGetName (osMemoryPoolId_t mp_id)
 
 void *osMemoryPoolAlloc(osMemoryPoolId_t mp_id, uint32_t timeout)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return NULL;
@@ -123,7 +123,7 @@ void *osMemoryPoolAlloc(osMemoryPoolId_t mp_id, uint32_t timeout)
 
 osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return osErrorParameter;
@@ -156,7 +156,7 @@ osStatus_t osMemoryPoolFree(osMemoryPoolId_t mp_id, void *block)
 
 uint32_t osMemoryPoolGetCapacity(osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return 0;
@@ -167,7 +167,7 @@ uint32_t osMemoryPoolGetCapacity(osMemoryPoolId_t mp_id)
 
 uint32_t osMemoryPoolGetBlockSize(osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return 0;
@@ -178,7 +178,7 @@ uint32_t osMemoryPoolGetBlockSize(osMemoryPoolId_t mp_id)
 
 uint32_t osMemoryPoolGetCount(osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return 0;
@@ -193,7 +193,7 @@ uint32_t osMemoryPoolGetCount(osMemoryPoolId_t mp_id)
 
 uint32_t osMemoryPoolGetSpace(osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return 0;
@@ -208,7 +208,7 @@ uint32_t osMemoryPoolGetSpace(osMemoryPoolId_t mp_id)
 
 osStatus_t osMemoryPoolDelete(osMemoryPoolId_t mp_id)
 {
-    cp_memPoolData_t *mem_pool = (cp_memPoolData_t *)mp_id;
+    cmsisPosix_memoryPoolHandler_t *mem_pool = (cmsisPosix_memoryPoolHandler_t *)mp_id;
     
     if (mem_pool == NULL) {
         return osErrorParameter;

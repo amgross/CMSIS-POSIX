@@ -14,12 +14,12 @@
 typedef struct {
     pthread_mutex_t mutex;
     const char *name;
-} mutexMockHandler_t;
+} cmsisPosix_mutexHandler_t;
 
 osMutexId_t osMutexNew(const osMutexAttr_t *attr)
 {
     // Allocate memory for our mutex wrapper
-    mutexMockHandler_t *mutex;
+    cmsisPosix_mutexHandler_t *mutex;
 
     // Initialize the mutex attributes
     pthread_mutexattr_t mutex_attr;
@@ -27,7 +27,7 @@ osMutexId_t osMutexNew(const osMutexAttr_t *attr)
         return NULL;
     }
 
-    mutex = (mutexMockHandler_t *)malloc(sizeof(mutexMockHandler_t));
+    mutex = (cmsisPosix_mutexHandler_t *)malloc(sizeof(cmsisPosix_mutexHandler_t));
     if (mutex == NULL) {
         return NULL;  // Memory allocation failed
     }
@@ -57,7 +57,7 @@ osMutexId_t osMutexNew(const osMutexAttr_t *attr)
 
 osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout)
 {
-    mutexMockHandler_t *mutex = (mutexMockHandler_t *)mutex_id;
+    cmsisPosix_mutexHandler_t *mutex = (cmsisPosix_mutexHandler_t *)mutex_id;
     int posix_ret;
     
     if (mutex == NULL)
@@ -112,7 +112,7 @@ osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout)
 
 osStatus_t osMutexRelease(osMutexId_t mutex_id)
 {
-    mutexMockHandler_t *mutex = (mutexMockHandler_t *)mutex_id;
+    cmsisPosix_mutexHandler_t *mutex = (cmsisPosix_mutexHandler_t *)mutex_id;
     
     if (mutex == NULL) {
         return osErrorParameter;
@@ -129,7 +129,7 @@ osStatus_t osMutexRelease(osMutexId_t mutex_id)
 }
 
 osStatus_t osMutexDelete(osMutexId_t mutex_id) {
-    mutexMockHandler_t *mutex = (mutexMockHandler_t *)mutex_id;
+    cmsisPosix_mutexHandler_t *mutex = (cmsisPosix_mutexHandler_t *)mutex_id;
     
     if (mutex == NULL)
     {
@@ -149,7 +149,7 @@ osStatus_t osMutexDelete(osMutexId_t mutex_id) {
 
 const char *osMutexGetName(osMutexId_t mutex_id)
 {
-    mutexMockHandler_t *mutex = (mutexMockHandler_t *)mutex_id;
+    cmsisPosix_mutexHandler_t *mutex = (cmsisPosix_mutexHandler_t *)mutex_id;
     
     if (mutex == NULL)
     {
