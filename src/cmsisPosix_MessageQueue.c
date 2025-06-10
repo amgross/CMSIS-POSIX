@@ -198,7 +198,7 @@ osStatus_t osMessageQueueGet(osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *m
 
     // Message available, copy from head of circular buffer and advance head
     pthread_mutex_lock(&queue->mutex);
-        memcpy(msg_ptr, queue->buffer + (queue->head * queue->padded_msg_size), queue->msg_size);
+    memcpy(msg_ptr, queue->buffer + (queue->head * queue->padded_msg_size), queue->msg_size);
     if (msg_prio) {
         *msg_prio = queue->priorities[queue->head];
     }
