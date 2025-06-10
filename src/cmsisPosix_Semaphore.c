@@ -35,7 +35,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
     }
 
     if (sem_init(&semaphore->used, 0, max_count - initial_count) != 0) {
-        sem_destroy(&semaphore->used);
+        sem_destroy(&semaphore->avail);
         free(semaphore);
         return NULL;
     }
@@ -104,8 +104,6 @@ osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
         // Increment the number of available tokens
         sem_post(&semaphore->avail);
         return osOK;
-    } else if (errno == ETIMEDOUT) {
-        return osErrorTimeout;
     } else {
         return osErrorResource;
     }
@@ -135,6 +133,7 @@ osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
     }
 
     sem_destroy(&semaphore->avail);
+    sem_destroy(&semaphore->used);
     free(semaphore);
     return osOK;
 }
