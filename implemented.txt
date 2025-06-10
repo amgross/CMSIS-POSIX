@@ -73,7 +73,7 @@ osMutexNew - implemented
 osMutexGetName - implemented
 osMutexAcquire - implemented
 osMutexRelease - implemented
-osMutexGetOwner - not implemented (yet)
+osMutexGetOwner - implemented
 osMutexDelete - implemented
 
 ==== Semaphore Management Functions ====
