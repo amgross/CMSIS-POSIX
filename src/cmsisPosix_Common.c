@@ -7,6 +7,7 @@
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"
 
+static_assert(CP_CONFIG_NANO_IN_TICK <= 1000000000, "Having tick greater than second may cause math overlapping");
 // Converts CMSIS timeout to absolute timespec
 void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts)
 {

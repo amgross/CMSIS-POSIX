@@ -35,9 +35,11 @@ Contributions via Issues or Pull Requests are very welcome—please follow the e
 
 ---
 
-## 🛠️ Installation & Build
+## 🛠️ Installation, configuration and Build
 
 Add to your compilation the sources from src folder and the headers from the inc folder
+
+The project supports user-defined overrides via a separate configuration file cmsisPosix_UserConfig.h in case CP_USE_USER_CONFIG is defined, see cmsisPosix_UserConfig_sample.h.
 
 ---
 
