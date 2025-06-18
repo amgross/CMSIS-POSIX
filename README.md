@@ -52,10 +52,10 @@ make run
 
 ## 🚀 Roadmap
 
-* [ ] Complete CMSIS‑RTOS2 thread API
-* [ ] Implement all synchronization primitives (semaphores, event flags, etc.)
-* [ ] Add more platform support (macOS, other Linux distros)
-* [ ] Improve test coverage
+* [ ] Implement all missinf APIs (see implemented.txt)
+* [ ] Add debug flag that deeper check status (for example checking memory pool problems)
+* [ ] Add optionally error prints.
+* [ ] Add object IDs, for checking valid object while usage. 
 
 > This is a community-driven effort—if you need a specific feature, please open an Issue or submit a PR!
 
@@ -63,13 +63,9 @@ make run
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/foo`)
-3. Commit your changes (`git commit -am 'Add foo'`)
-4. Push to the branch (`git push origin feature/foo`)
-5. Open a Pull Request
+PRs are highly welcome.
 
-Please try to match the existing formatting and naming conventions.
+Please try to match the existing formatting and naming conventions. No strict convention.
 
 ---
 
