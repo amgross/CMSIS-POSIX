@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Arye Gross
+// SPDX-License-Identifier: Apache-2.0
+
 #define _GNU_SOURCE
 #include "cmsis_os2.h"
 #include "cmsisPosix_Config.h"

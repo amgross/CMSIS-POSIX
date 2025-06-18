@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Arye Gross
+// SPDX-License-Identifier: Apache-2.0
+
 #define _GNU_SOURCE
 #include <stdint.h>
 #include <time.h>
