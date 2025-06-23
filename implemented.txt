@@ -10,8 +10,8 @@ osKernelSuspend - not implemented (yet)
 osKernelResume - not implemented (yet)
 osKernelProtect - not implemented (yet)
 osKernelDestroyClass - not implemented (yet)
-osKernelGetTickCount - not implemented (yet)
-osKernelGetTickFreq - not implemented (yet)
+osKernelGetTickCount - implemented
+osKernelGetTickFreq - implemented
 osKernelGetSysTimerCount - not implemented (yet)
 osKernelGetSysTimerFreq - not implemented (yet)
 
