@@ -28,3 +28,10 @@ osStatus_t osDelay(uint32_t ticks)
         }
     }
 }
+
+osStatus_t osDelayUntil (uint32_t ticks)
+{
+    // Handle tick counter wrapping by converting to relative delay duration
+    uint32_t delta = ticks - osKernelGetTickCount();
+    return osDelay(delta);
+}
