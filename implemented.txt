@@ -49,7 +49,7 @@ osThreadFlagsWait - not implemented (yet)
 
 ==== Generic Wait Functions ====
 osDelay - implemented
-osDelayUntil - not implemented (yet)
+osDelayUntil - implemented
 
 ==== Timer Management Functions ====
 osTimerNew - not implemented (yet)
