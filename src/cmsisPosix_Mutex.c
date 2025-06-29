@@ -32,7 +32,7 @@ osMutexId_t osMutexNew(const osMutexAttr_t *attr)
         return NULL;
     }
 
-    mutex = (cmsisPosix_mutexHandler_t *)malloc(sizeof(cmsisPosix_mutexHandler_t));
+    mutex = (cmsisPosix_mutexHandler_t *)calloc(1, sizeof(cmsisPosix_mutexHandler_t));
     if (mutex == NULL)
     {
         goto error_exit;
