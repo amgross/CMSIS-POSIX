@@ -6,7 +6,7 @@
 void Thread_owner(void *argument);
 void second_thread(void *argument);
 
-osThreadId_t thread_id;
+osThreadId_t g_thread_id;
 static osMutexId_t mutex;
 
 void test_start(void)
@@ -22,8 +22,8 @@ void test_start(void)
     mutex_owner = osMutexGetOwner(mutex);
     CP_ASSERT_EQ(mutex_owner, NULL);
 
-    thread_id = osThreadNew(Thread_owner, NULL, NULL);
-    CP_ASSERT_NE(Thread_owner, NULL);
+    g_thread_id = osThreadNew(Thread_owner, NULL, NULL);
+    CP_ASSERT_NE(g_thread_id, NULL);
 
     osKernelStart();
 
@@ -42,11 +42,11 @@ void Thread_owner(void *argument)
 
     curr_thread_id = osThreadGetId();
     CP_ASSERT_NE(curr_thread_id, NULL);
-    CP_ASSERT_EQ(curr_thread_id, thread_id);
+    CP_ASSERT_EQ(curr_thread_id, g_thread_id);
     mutex_owner = osMutexGetOwner(mutex);
     CP_ASSERT_NE(mutex_owner, NULL);
 
-    CP_ASSERT_EQ(thread_id, mutex_owner);
+    CP_ASSERT_EQ(g_thread_id, mutex_owner);
 
     second_thread_id = osThreadNew(second_thread, NULL, NULL);
     CP_ASSERT_NE(second_thread_id, NULL);
@@ -71,5 +71,5 @@ void second_thread(void *argument)
     mutex_owner = osMutexGetOwner(mutex);
     CP_ASSERT_NE(mutex_owner, NULL);
 
-    CP_ASSERT_EQ(thread_id, mutex_owner);
+    CP_ASSERT_EQ(g_thread_id, mutex_owner);
 }

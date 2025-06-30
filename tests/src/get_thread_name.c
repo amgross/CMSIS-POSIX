@@ -19,7 +19,7 @@ void test_start(void)
   attr.name = THREAD_NAME;
 
   osThreadId_t thread_id = osThreadNew(Thread1, NULL, &attr);    // Create Thread1
-
+  CP_ASSERT_NE(NULL, thread_id);
 
   const char *name = osThreadGetName(thread_id);
   CP_ASSERT_STREQ(name, THREAD_NAME);

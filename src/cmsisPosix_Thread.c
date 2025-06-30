@@ -13,7 +13,9 @@
 #include "cmsisPosix_Config.h"
 
 static pthread_key_t cp_threadDataKey;
+#if CP_SCHED != SCHED_OTHER
 static uint32_t cp_threadMinPriority;
+#endif
 
 /*
  * Struct for thread wrapper input
@@ -49,11 +51,17 @@ static void *cp_threadWrapper(void *arg)
 
 osStatus_t cp_threadInitSystem()
 {
-    uint32_t threadMaxPriority;
     if (pthread_key_create(&cp_threadDataKey, cp_threadDataCleanup) != 0)
     {
         return osError;
     }
+
+#if CP_SCHED != SCHED_OTHER
+    uint32_t threadMaxPriority;
+
+    // In case of round robin/fifo, we really have priority between threads
+    pthread_t curr_thread;
+    struct sched_param curr_thread_param;
 
     cp_threadMinPriority = sched_get_priority_min(CP_SCHED);
     threadMaxPriority = sched_get_priority_max(CP_SCHED);
@@ -62,6 +70,14 @@ osStatus_t cp_threadInitSystem()
     {
         return osError;
     }
+    curr_thread = pthread_self();
+
+    // This thread should be with higher priority thaqn all other, so no thread will be able to run before this thread exit in osKernelStart.
+    curr_thread_param.sched_priority = osPriorityISR + cp_threadMinPriority;
+
+    int ret = pthread_setschedparam(curr_thread, SCHED_FIFO, &curr_thread_param);
+    assert(ret == 0);// If this fail, probably lack permisions to run
+#endif
 
     return osOK;
 }
@@ -107,10 +123,15 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
         sched.sched_priority = osPriorityNormal + cp_threadMinPriority;
     }
 
-    if (pthread_attr_setschedpolicy(&pthread_attr, CP_SCHED) != 0 ||
-        pthread_attr_setschedparam(&pthread_attr, &sched) != 0)
+    if (pthread_attr_setschedpolicy(&pthread_attr, CP_SCHED) != 0)
     {
-        printf("Warning: Unable to set thread scheduling. Try running with sudo.\n");
+        pthread_attr_destroy(&pthread_attr);
+        return NULL;
+    }
+    if(pthread_attr_setschedparam(&pthread_attr, &sched) != 0)
+    {
+        pthread_attr_destroy(&pthread_attr);
+        return NULL;
     }
 #endif
 

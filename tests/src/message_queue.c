@@ -25,9 +25,11 @@ bool thread3 = true;
 bool thread4 = true;
 void test_start(void)
 {
+  osThreadId_t thread_id;
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
-  osThreadNew(Thread_manager, NULL, NULL);
+  thread_id = osThreadNew(Thread_manager, NULL, NULL);
+  CP_ASSERT_NE(NULL, thread_id);
 
   osKernelStart();                     // Start scheduler
 
@@ -37,6 +39,7 @@ void test_start(void)
 void Thread_manager(void *argument)
 {
   (void)argument;
+  osThreadId_t thread_id;
   message_t msg;
   myMessageQueue = osMessageQueueNew(4, sizeof(message_t), NULL);   // Create message queue with default attributes
   CP_ASSERT_NE(myMessageQueue, NULL);
@@ -128,16 +131,21 @@ void Thread_manager(void *argument)
   CP_ASSERT_EQ(osMessageQueueGet(myMessageQueue, &msg, NULL, 0), osErrorResource);
 
   // Test message passing between threads using Thread1 and Thread2
-  osThreadNew(Thread1, NULL, NULL);
-  osThreadNew(Thread2, NULL, NULL);
+  thread_id = osThreadNew(Thread1, NULL, NULL);
+  CP_ASSERT_NE(NULL, thread_id);
+  thread_id = osThreadNew(Thread2, NULL, NULL);
+  CP_ASSERT_NE(NULL, thread_id);
+
   while (thread1 || thread2) {}
   CP_ASSERT_EQ(osMessageQueueDelete(myMessageQueue), osOK);
 
   // Test sorting of message priority across threads using Thread3 and Thread 4
   myMessageQueue = osMessageQueueNew(100, sizeof(message_t), NULL);
   CP_ASSERT_NE(myMessageQueue, NULL);
-  osThreadNew(Thread3, NULL, NULL);     // Create Thread3
-  osThreadNew(Thread4, NULL, NULL);     // Create Thread4
+  thread_id = osThreadNew(Thread3, NULL, NULL);     // Create Thread3
+  CP_ASSERT_NE(NULL, thread_id);
+  thread_id = osThreadNew(Thread4, NULL, NULL);     // Create Thread4
+  CP_ASSERT_NE(NULL, thread_id);
   while (thread3 || thread4) {}
   CP_ASSERT_EQ(osMessageQueueGetCount(myMessageQueue), 100);
   uint8_t last_priority = 255;

@@ -20,6 +20,6 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Run make run in /tests/config1
-        working-directory: ./tests/config1
+      - name: Run make run in /tests/config3
+        working-directory: ./tests/config3
         run: timeout 60 make run  # Timeout after 1 minute

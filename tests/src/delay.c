@@ -13,9 +13,12 @@ bool thread1 = true;
 bool thread2 = true;
 void test_start(void)
 {
+  osThreadId_t thread_id;
+
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
-  osThreadNew(Thread_manager, NULL, NULL); // Create the manager thread
+  thread_id = osThreadNew(Thread_manager, NULL, NULL); // Create the manager thread
+  CP_ASSERT_NE(NULL, thread_id);
 
   osKernelStart();
 
@@ -26,8 +29,14 @@ void Thread_manager(void *argument)
 {
   (void)argument;
 
-  osThreadNew(Thread1, NULL, NULL);     // Create Thread1
-  osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  osThreadId_t thread_id;
+
+  thread_id = osThreadNew(Thread1, NULL, NULL);     // Create Thread1
+  CP_ASSERT_NE(NULL, thread_id);
+
+  thread_id = osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  CP_ASSERT_NE(NULL, thread_id);
+
   usleep(100 * 1000);  			// Sleep for 100 ms
   CP_ASSERT_EQ(thread1, true);
   CP_ASSERT_EQ(thread2, true);

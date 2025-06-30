@@ -14,10 +14,12 @@ bool thread1 = true;
 bool thread2 = true;
 void test_start(void)
 {
+  osThreadId_t thread_id;
 
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
-  osThreadNew(Thread_manager, NULL, NULL);
+  thread_id = osThreadNew(Thread_manager, NULL, NULL);
+  CP_ASSERT_NE(NULL, thread_id);
 
   osKernelStart();                     // Start scheduler
 
@@ -27,6 +29,8 @@ void test_start(void)
 void Thread_manager(void *argument)
 {
   (void)argument;
+  osThreadId_t thread_id;
+
   myMemoryPool = osMemoryPoolNew(2, 128, NULL);   // Create memory pool with default attributes
   CP_ASSERT_NE(myMemoryPool, NULL);
   CP_ASSERT_EQ(osMemoryPoolGetCapacity(myMemoryPool), 2);
@@ -48,9 +52,11 @@ void Thread_manager(void *argument)
   CP_ASSERT_EQ(osMemoryPoolGetSpace(NULL), 0);
   CP_ASSERT_EQ(osMemoryPoolDelete(NULL), osErrorParameter);
 
-  osThreadNew(Thread1, NULL, NULL);     // Create Thread1
+  thread_id = osThreadNew(Thread1, NULL, NULL);     // Create Thread1
+  CP_ASSERT_NE(NULL, thread_id);
 
-  osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  thread_id = osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  CP_ASSERT_NE(NULL, thread_id);
 
   // Wait for the threads to terminate
   while (thread1 || thread2)

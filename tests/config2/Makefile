@@ -1,0 +1,2 @@
+CONFIG_CFLAGS := -DCP_USE_USER_CONFIG
+include ../Makefile

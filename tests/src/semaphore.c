@@ -14,9 +14,11 @@ bool thread1 = true;
 bool thread2 = true;
 void test_start(void)
 {
+  osThreadId_t thread_id;
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
-  osThreadNew(Thread_manager, NULL, NULL);
+  thread_id = osThreadNew(Thread_manager, NULL, NULL);
+  CP_ASSERT_NE(thread_id, NULL);
 
   osKernelStart();                     // Start scheduler
 
@@ -26,6 +28,7 @@ void test_start(void)
 void Thread_manager(void *argument)
 {
   (void)argument;
+  osThreadId_t thread_id;
 
   mySemaphore = osSemaphoreNew(2, 0, NULL);   // Create semaphore with initially zero tokens
   CP_ASSERT_NE(mySemaphore, NULL);
@@ -51,8 +54,10 @@ void Thread_manager(void *argument)
   CP_ASSERT_EQ(osSemaphoreGetCount(NULL), 0);
   CP_ASSERT_EQ(osSemaphoreDelete(NULL), osErrorParameter);
 
-  osThreadNew(Thread1, NULL, NULL);     // Create Thread1
-  osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  thread_id = osThreadNew(Thread1, NULL, NULL);     // Create Thread1
+  CP_ASSERT_NE(thread_id, NULL);
+  thread_id = osThreadNew(Thread2, NULL, NULL);     // Create Thread2
+  CP_ASSERT_NE(thread_id, NULL);
 
   // Wait for the threads to terminate
   while (thread1 || thread2) {}

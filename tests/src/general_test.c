@@ -12,11 +12,16 @@ void Thread2(void *argument);
 
 void test_start(void)
 {
+  osThreadId_t thread_id;
+
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   myMutex = osMutexNew(NULL);          // Create mutex with default attributes
 
-  osThreadNew(Thread1, NULL, NULL);    // Create Thread1
-  osThreadNew(Thread2, NULL, NULL);    // Create Thread2
+  thread_id = osThreadNew(Thread1, NULL, NULL);    // Create Thread1
+  CP_ASSERT_NE(NULL, thread_id);
+
+  thread_id = osThreadNew(Thread2, NULL, NULL);    // Create Thread2
+  CP_ASSERT_NE(NULL, thread_id);
 
   osKernelStart();                     // Start scheduler
 

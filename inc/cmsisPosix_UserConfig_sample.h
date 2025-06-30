@@ -5,13 +5,6 @@
  * CP_CONFIG_SCHEDULING
  * This define control the scheduling algorithm used for CMSIS threads.
  *
- * CP_CONFIG_SCHEDULING_NICE:
- *   * Uses POSIX nice-based scheduling.
- *   * priority are totally ignored.
- *   * threads may start running before osKernelStart is called.
- *   
- *   (Note: This behavior differs from typical RTOS preemption. Use just if you can't grant the process the needed privilages)
- *
  * CP_CONFIG_SCHEDULING_ROUND_ROBIN:
  *   Uses POSIX SCHED_RR. The highest-priority thread always runs. If multiple threads have the same priority, they share CPU time.
  *   (Similar to FreeRTOS configUSE_TIME_SLICING=1 and ThreadX with finite time_slice.)
@@ -21,8 +14,15 @@
  *   Uses POSIX SCHED_FIFO. The highest-priority thread always runs. Among equal-priority threads, the currently running one continues until it blocks.
  *   (Similar to FreeRTOS configUSE_TIME_SLICING=0 and ThreadX with infinite time_slice.)
  *   ! Requires running the application with elevated privileges (e.g., sudo).
+ *
+ * CP_CONFIG_SCHEDULING_NICE:
+ *   * Uses POSIX nice-based scheduling.
+ *   * priority are totally ignored.
+ *   * threads may start running before osKernelStart is called.
+ *   
+ *   (Note: This behavior differs from typical RTOS preemption, and not supports lots of cmsis scheduling requirements. Use just if you can't grant the process the needed privilages)
  */
-//#define CP_CONFIG_SCHEDULING CP_CONFIG_SCHEDULING_NICE
+//#define CP_CONFIG_SCHEDULING CP_CONFIG_SCHEDULING_FIFO
 
 
 /*
