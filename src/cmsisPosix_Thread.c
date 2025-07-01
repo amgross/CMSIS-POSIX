@@ -173,6 +173,11 @@ osThreadId_t osThreadGetId (void)
     return (osThreadId_t)thread_handler;
 }
 
+osStatus_t osThreadYield (void)
+{
+    return (sched_yield() == 0) ? osOK : osError;
+}
+
 __NO_RETURN void osThreadExit(void)
 {
     pthread_exit(NULL); // Terminates the calling thread

@@ -26,7 +26,7 @@ osThreadGetStackSize - not implemented (yet)
 osThreadGetStackSpace - not implemented (yet)
 osThreadSetPriority - not implemented (yet)
 osThreadGetPriority - not implemented (yet)
-osThreadYield - not implemented (yet)
+osThreadYield - implemented
 osThreadSuspend - not implemented (yet)
 osThreadResume - not implemented (yet)
 osThreadDetach - not implemented (yet)
