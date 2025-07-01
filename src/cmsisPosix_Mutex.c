@@ -38,6 +38,7 @@ osMutexId_t osMutexNew(const osMutexAttr_t *attr)
         goto error_exit;
     }
 
+    mutex->owner = NULL;
 
     // Set up mutex according to CMSIS attributes if provided
     if (attr != NULL)
