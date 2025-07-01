@@ -10,8 +10,8 @@ osKernelSuspend - not implemented (yet)
 osKernelResume - not implemented (yet)
 osKernelProtect - not implemented (yet)
 osKernelDestroyClass - not implemented (yet)
-osKernelGetTickCount - not implemented (yet)
-osKernelGetTickFreq - not implemented (yet)
+osKernelGetTickCount - implemented
+osKernelGetTickFreq - implemented
 osKernelGetSysTimerCount - not implemented (yet)
 osKernelGetSysTimerFreq - not implemented (yet)
 
@@ -49,7 +49,7 @@ osThreadFlagsWait - not implemented (yet)
 
 ==== Generic Wait Functions ====
 osDelay - implemented
-osDelayUntil - not implemented (yet)
+osDelayUntil - implemented
 
 ==== Timer Management Functions ====
 osTimerNew - not implemented (yet)
