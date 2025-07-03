@@ -34,9 +34,8 @@ osMemoryPoolId_t osMemoryPoolNew(uint32_t block_count, uint32_t block_size, cons
         return NULL;
     }
 
-    // Calculate padded block size required to ensure each block starts at an aligned address
-    uint32_t align_size = sizeof(max_align_t);
-    uint32_t padded_block_size = align_size * ((block_size + align_size - 1) / align_size);
+    // Pad block size to a multiple of 4
+    uint32_t padded_block_size = 4 * ((block_size + 3) / 4);
 
     cmsisPosix_memoryPoolHandler_t *mem_pool = malloc(sizeof(cmsisPosix_memoryPoolHandler_t));
     if (mem_pool == NULL)
