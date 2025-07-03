@@ -15,7 +15,6 @@ extern "C" {
 #endif
 
 void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts);
-uint32_t cp_padForMemoryAlignment(uint32_t data_size);
 
 #ifdef  __cplusplus
 }

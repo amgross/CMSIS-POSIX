@@ -49,8 +49,8 @@ osMessageQueueId_t osMessageQueueNew(uint32_t msg_count, uint32_t msg_size, cons
         return NULL;
     }
 
-    // Calculate padded message size required to ensure each message starts at an aligned address
-    uint32_t padded_msg_size = cp_padForMemoryAlignment(msg_size);
+    // Pad message size to a multiple of 4
+    uint32_t padded_msg_size = 4 * ((msg_size + 3) / 4);
 
     cmsisPosix_messageQueueHandler_t *queue = malloc(sizeof(cmsisPosix_messageQueueHandler_t));
     if (queue == NULL)

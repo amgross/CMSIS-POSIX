@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #define _GNU_SOURCE
-#include <stddef.h>
 #include <stdint.h>
 #include <time.h>
 #include "cmsis_os2.h"
@@ -28,11 +27,4 @@ void cp_timeoutToTimespec(uint32_t timeout, struct timespec *ts)
         ts->tv_sec += ts->tv_nsec / 1000000000L;
         ts->tv_nsec %= 1000000000L;
     }
-}
-
-// Pads data_size so that it is as strictly aligned as max_align_t
-uint32_t cp_padForMemoryAlignment(uint32_t data_size)
-{
-    uint32_t align_size = _Alignof(max_align_t);
-    return align_size * ((data_size + align_size - 1) / align_size);
 }
