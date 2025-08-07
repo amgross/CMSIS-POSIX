@@ -35,11 +35,29 @@ static void cp_threadDataCleanup(void *ptr)
 }
 
 /*
+ * Function to ensure all threads are running on single CPU, no real parallel work.
+ */
+static void cp_threadUseSingleCpu()
+{
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(0, &cpuset); // Use CPU 0
+
+    pthread_t thread = pthread_self();
+    if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset) != 0) {
+        perror("pthread_setaffinity_np");
+    }
+}
+
+/*
  * Wrapper for threads entry, converting the void* that returned by POSIX entry to void returned by cmsis entry.
  */
 static void *cp_threadWrapper(void *arg)
 {
+
     cmsisPosix_threadHandler_t *threadData = (cmsisPosix_threadHandler_t *)arg;
+
+    threadData->thread = pthread_self(); // Storing here in case ran before the creation function ran
 
     pthread_setspecific(cp_threadDataKey, threadData);
 
@@ -70,6 +88,9 @@ osStatus_t cp_threadInitSystem()
     {
         return osError;
     }
+
+    cp_threadUseSingleCpu();
+
     curr_thread = pthread_self();
 
     // This thread should be with higher priority thaqn all other, so no thread will be able to run before this thread exit in osKernelStart.
@@ -84,7 +105,6 @@ osStatus_t cp_threadInitSystem()
 
 osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr_t *attr)
 {
-    (void)attr;
     pthread_t thread;
     pthread_attr_t pthread_attr;
     cmsisPosix_threadHandler_t *threadData;
@@ -139,9 +159,11 @@ osThreadId_t osThreadNew(osThreadFunc_t func, void *argument, const osThreadAttr
 
     threadData->func = func;
     threadData->arg = argument;
-    threadData->thread = thread;
 
     int result = pthread_create(&thread, &pthread_attr, cp_threadWrapper, threadData);
+
+    threadData->thread = thread; // Storing here in case ran before the wrapper function ran
+
     pthread_attr_destroy(&pthread_attr);
 
     if (result != 0)
@@ -164,6 +186,28 @@ const char *osThreadGetName (osThreadId_t thread_id)
     }
 
     return ((cmsisPosix_threadHandler_t *)thread_id)->name;
+}
+
+osStatus_t osThreadSetPriority (osThreadId_t thread_id, osPriority_t priority)
+{
+        if(NULL == thread_id)
+    {
+        return osErrorParameter;
+    }
+
+#if CP_SCHED != SCHED_OTHER
+    cmsisPosix_threadHandler_t *thread_handler = (cmsisPosix_threadHandler_t *)thread_id;
+
+    struct sched_param sched;
+    sched.sched_priority = priority + cp_threadMinPriority;
+
+    int ret = pthread_setschedparam(thread_handler->thread, CP_SCHED, &sched);
+    assert(ret == 0);// If this fail, probably lack permisions to run
+#else
+    (void)priority;
+#endif
+
+    return osOK;
 }
 
 osThreadId_t osThreadGetId (void)

@@ -16,7 +16,7 @@ void test_start(void)
 
   osKernelStart();
 
-  CP_UASSERT_NREACHABLE();
+  CP_ASSERT_UNREACHABLE();
 }
 
 void Thread1(void *argument)

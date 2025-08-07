@@ -22,13 +22,14 @@ void test_start(void)
 
   osKernelStart();                     // Start scheduler
 
-  CP_UASSERT_NREACHABLE();
+  CP_ASSERT_UNREACHABLE();
 }
 
 void Thread_manager(void *argument)
 {
   (void)argument;
   osThreadId_t thread_id;
+  osStatus_t status;
 
   mySemaphore = osSemaphoreNew(2, 0, NULL);   // Create semaphore with initially zero tokens
   CP_ASSERT_NE(mySemaphore, NULL);
@@ -58,6 +59,9 @@ void Thread_manager(void *argument)
   CP_ASSERT_NE(thread_id, NULL);
   thread_id = osThreadNew(Thread2, NULL, NULL);     // Create Thread2
   CP_ASSERT_NE(thread_id, NULL);
+
+  status = osThreadSetPriority(osThreadGetId(), osPriorityBelowNormal);
+  CP_ASSERT_EQ(status, osOK);
 
   // Wait for the threads to terminate
   while (thread1 || thread2) {}

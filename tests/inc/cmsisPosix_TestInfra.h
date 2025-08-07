@@ -60,7 +60,7 @@
         } \
     } while (0)
 
-#define CP_UASSERT_NREACHABLE() \
+#define CP_ASSERT_UNREACHABLE() \
     do { \
         fprintf(stderr, CP_COLOR_RED "UNREACHABLE CODE REACHED" CP_COLOR_RESET "\n  in %s:%d\n", __FILE__, __LINE__); \
         exit(EXIT_FAILURE); \

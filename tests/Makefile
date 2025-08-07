@@ -17,7 +17,7 @@ BUILD_DIR := $(CONFIG_DIR)/build
 BIN_DIR := $(CONFIG_DIR)/bin
 
 # Flags
-CFLAGS := -Werror -Wall -Wextra -MMD -MP -I$(MAIN_INC) -I$(INC_DIR) -I$(TEST_INC)
+CFLAGS := -Werror -Wall -Wextra -MMD -MP -g -I$(MAIN_INC) -I$(INC_DIR) -I$(TEST_INC)
 CFLAGS += $(CONFIG_CFLAGS)
 
 # Source and object files

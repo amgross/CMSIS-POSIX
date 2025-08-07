@@ -25,7 +25,7 @@ void test_start(void)
 
   osKernelStart();                     // Start scheduler
 
-  CP_UASSERT_NREACHABLE();
+  CP_ASSERT_UNREACHABLE();
 }
 
 void Thread1(void *argument)

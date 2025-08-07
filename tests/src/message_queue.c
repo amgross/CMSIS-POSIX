@@ -26,21 +26,29 @@ bool thread4 = true;
 void test_start(void)
 {
   osThreadId_t thread_id;
+  osThreadAttr_t attr = {0};
   osKernelInitialize();                 // Initialize CMSIS-RTOS
 
-  thread_id = osThreadNew(Thread_manager, NULL, NULL);
+  attr.priority = osPriorityAboveNormal;
+  thread_id = osThreadNew(Thread_manager, NULL, &attr);
   CP_ASSERT_NE(NULL, thread_id);
 
   osKernelStart();                     // Start scheduler
 
-  CP_UASSERT_NREACHABLE();
+  CP_ASSERT_UNREACHABLE();
 }
 
 void Thread_manager(void *argument)
 {
   (void)argument;
+
+  osThreadAttr_t attr = {0};
   osThreadId_t thread_id;
   message_t msg;
+  osStatus_t status;
+
+  attr.priority = osPriorityBelowNormal7;
+
   myMessageQueue = osMessageQueueNew(4, sizeof(message_t), NULL);   // Create message queue with default attributes
   CP_ASSERT_NE(myMessageQueue, NULL);
   CP_ASSERT_EQ(osMessageQueueGetCapacity(myMessageQueue), 4);
@@ -131,22 +139,30 @@ void Thread_manager(void *argument)
   CP_ASSERT_EQ(osMessageQueueGet(myMessageQueue, &msg, NULL, 0), osErrorResource);
 
   // Test message passing between threads using Thread1 and Thread2
-  thread_id = osThreadNew(Thread1, NULL, NULL);
+  thread_id = osThreadNew(Thread1, NULL, &attr);
   CP_ASSERT_NE(NULL, thread_id);
-  thread_id = osThreadNew(Thread2, NULL, NULL);
+  thread_id = osThreadNew(Thread2, NULL, &attr);
   CP_ASSERT_NE(NULL, thread_id);
 
+  status = osThreadSetPriority(osThreadGetId(), osPriorityBelowNormal);
+  CP_ASSERT_EQ(status, osOK);
+
   while (thread1 || thread2) {}
+
   CP_ASSERT_EQ(osMessageQueueDelete(myMessageQueue), osOK);
 
   // Test sorting of message priority across threads using Thread3 and Thread 4
   myMessageQueue = osMessageQueueNew(100, sizeof(message_t), NULL);
   CP_ASSERT_NE(myMessageQueue, NULL);
+
   thread_id = osThreadNew(Thread3, NULL, NULL);     // Create Thread3
   CP_ASSERT_NE(NULL, thread_id);
+
   thread_id = osThreadNew(Thread4, NULL, NULL);     // Create Thread4
   CP_ASSERT_NE(NULL, thread_id);
+
   while (thread3 || thread4) {}
+
   CP_ASSERT_EQ(osMessageQueueGetCount(myMessageQueue), 100);
   uint8_t last_priority = 255;
   for (int n = 0;  n < 100;  n++)
