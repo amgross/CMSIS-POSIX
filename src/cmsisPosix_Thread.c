@@ -74,6 +74,8 @@ osStatus_t cp_threadInitSystem()
         return osError;
     }
 
+    cp_threadUseSingleCpu();
+
 #if CP_SCHED != SCHED_OTHER
     uint32_t threadMaxPriority;
 
@@ -88,8 +90,6 @@ osStatus_t cp_threadInitSystem()
     {
         return osError;
     }
-
-    cp_threadUseSingleCpu();
 
     curr_thread = pthread_self();
 
