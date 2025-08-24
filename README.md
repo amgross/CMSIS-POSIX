@@ -4,6 +4,10 @@
 
 An implementation of the CMSIS‑RTOS2 API on a POSIX platform for testing and mocking embedded code.
 
+🔗 [Project Website (GitHub Pages)](https://amgross.github.io/CMSIS-POSIX/)
+
+📂 [Source Code on GitHub](https://github.com/amgross/CMSIS-POSIX)
+
 ---
 
 ## 📖 Overview
