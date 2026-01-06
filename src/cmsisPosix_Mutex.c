@@ -46,7 +46,46 @@ osMutexId_t osMutexNew(const osMutexAttr_t *attr)
         // Set name provided (If NULL then NULL)
         mutex->name = attr->name;
 
-        //TODO deal with all other attributes
+        /* Handle mutex attribute bits: recursive, priority inheritance, robust */
+        if (attr->attr_bits & osMutexRecursive) {
+            if (pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE) != 0) {
+                goto error_exit;
+            }
+        }
+
+        if (attr->attr_bits & osMutexPrioInherit) {
+#if 0
+            // TODO not tested yet
+#ifdef PTHREAD_PRIO_INHERIT
+            if (pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT) != 0) {
+                goto error_exit;
+            }
+#else
+            /* protocol not supported on this platform */
+            assert(0 && "PTHREAD_PRIO_INHERIT needed but not supported");
+#endif
+#else
+            // Priority inheritance not supported: best-effort
+            goto error_exit;
+#endif
+        }
+
+        if (attr->attr_bits & osMutexRobust) {
+#if 0
+            // TODO not tested yet and may need more handling on lock/unlock
+#ifdef PTHREAD_MUTEX_ROBUST
+            if (pthread_mutexattr_setrobust(&mutex_attr, PTHREAD_MUTEX_ROBUST) != 0) {
+                goto error_exit;
+            }
+#else
+            /* robust mutex not supported: best-effort */
+            assert(0 && "PTHREAD_MUTEX_ROBUST needed but not supported");
+#endif
+#else
+            // Robust mutex not supported: best-effort
+            goto error_exit;
+#endif
+        }
     }
     else
     {
